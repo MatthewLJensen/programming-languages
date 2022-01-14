@@ -1,4 +1,6 @@
-class Token {
+import { TokenType } from './tokenType'
+
+export class Token {
     type: TokenType
     lexeme: string
     literal: any
