@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Scanner } from './scanner';
-import * as readline from 'readline-sync';
+import * as readline from 'readline';
 import { Token } from './token';
 
 
@@ -27,28 +27,33 @@ function runFile(path: string) {
 
 function runPrompt() {
 
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    })
 
-    while (true) {
-
-        const line = readline.question('> ')
-        switch (line) {
-            case null:
-                break
-            default:
-                run(line)
-                hadError = false
-        }
+    const prompt = () => {
+        rl.question('> ', line => {
+            switch (line) {
+                case null:
+                    break
+                default:
+                    run(line)
+                    hadError = false
+            }
+            prompt()
+        })
     }
 
+    prompt()
 }
-
 
 function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
 
     for (let token of tokens) {
-        console.log(token)
+        console.log(token.toString())
     }
 }
 

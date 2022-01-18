@@ -6,7 +6,7 @@ export class Token {
     literal: any
     line: number
 
-    constructor(type: TokenType, lexeme: string, literal: any, line: number){
+    constructor(type: TokenType, lexeme: string, literal: any = null, line: number){
         this.type = type
         this.lexeme = lexeme
         this.literal = literal
@@ -14,6 +14,6 @@ export class Token {
     }
 
     public toString() {
-        return this.type + " " + this.lexeme + " " + this.literal
+        return TokenType[this.type] + " " + this.lexeme + " " + this.literal
     }
 }
