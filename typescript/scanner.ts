@@ -1,5 +1,5 @@
 import { isIndexSignatureDeclaration } from 'typescript';
-import { Lox } from './lox';
+import { error } from './lox';
 import { TokenType } from './tokenType';
 import { Token } from './token';
 
@@ -49,7 +49,6 @@ export class Scanner {
     }
 
     private scanToken() {
-        let lox = new Lox()
         const c: string = this.advance()
         switch (c) {
             case '(': this.addToken(TokenType.LEFT_PAREN)
@@ -113,7 +112,7 @@ export class Scanner {
                 } else if (this.isAlpha(c)) {
                     this.identifier()
                 } else {
-                    lox.error(this.line, `Unexpected character: ${c}`)
+                    error(this.line, `Unexpected character: ${c}`)
                 }
                 break
         }
@@ -153,8 +152,7 @@ export class Scanner {
         }
 
         if (this.isAtEnd()) {
-            let lox = new Lox()
-            lox.error(this.line, "Unterminated string.")
+            error(this.line, "Unterminated string.")
             return
         }
 
@@ -198,14 +196,12 @@ export class Scanner {
     }
 
     private identifier() {
-        while (this.isAlphaNumeric(this.peek())) {
-            this.advance()
-        }
-
+        while (this.isAlphaNumeric(this.peek())) this.advance()
+        
         const text = this.source.slice(this.start, this.current)
-        const type = this.keywords.get(text)
+        let type = this.keywords.get(text)
         if (type == null) {
-            this.addToken(TokenType.IDENTIFIER)
+            type = TokenType.IDENTIFIER
         }
         this.addToken(type)
     }

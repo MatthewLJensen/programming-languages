@@ -3,65 +3,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var scanner_1 = require("./scanner");
 var readline = require("readline-sync");
-var Lox = /** @class */ (function () {
-    function Lox() {
-        this.hadError = false;
+var hadError = false;
+var args = process.argv.slice(2);
+if (args.length > 1) {
+    console.log("Usage: tlox [script]");
+    process.exit(64);
+}
+else if (args.length == 1) {
+    runFile(args[0]);
+}
+else {
+    runPrompt();
+}
+function runFile(path) {
+    var buffer = fs.readFileSync(path).toString('utf-8');
+    run(buffer);
+    if (hadError)
+        process.exit(65);
+}
+function runPrompt() {
+    while (true) {
+        var line = readline.question('> ');
+        switch (line) {
+            case null:
+                break;
+            default:
+                run(line);
+                hadError = false;
+        }
     }
-    Lox.prototype.main = function (args) {
-        if (args.length > 1) {
-            console.log("Usage: tlox [script]");
-            process.exit(64);
-        }
-        else if (args.length == 1) {
-            this.runFile(args[0]);
-        }
-        else {
-            this.runPrompt();
-        }
-    };
-    Lox.prototype.runFile = function (path) {
-        // const reader = new FileReader()
-        // reader.onload = function(){
-        //     const buffer = reader.result
-        //     const bytes = new Uint8Array(buffer)
-        // }
-        // const bytes = fs.readFileSync(path)
-        // const buffer = new Uint8Array(bytes)
-        var buffer = fs.readFileSync(path).toString('utf-8');
-        this.run(buffer);
-        if (this.hadError)
-            process.exit(65);
-    };
-    Lox.prototype.runPrompt = function () {
-        while (true) {
-            var line = readline.question('> ');
-            switch (line) {
-                case null:
-                    break;
-                default:
-                    this.run(line);
-                    this.hadError = false;
-            }
-        }
-    };
-    Lox.prototype.run = function (source) {
-        var scanner = new scanner_1.Scanner(source);
-        var tokens = scanner.scanTokens();
-        for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
-            var token = tokens_1[_i];
-            console.log(token);
-        }
-    };
-    Lox.prototype.error = function (line, message) {
-        this.report(line, "", message);
-    };
-    Lox.prototype.report = function (line, where, message) {
-        console.error("[line " + line + "] Error " + where + ": " + message);
-        this.hadError = true;
-    };
-    return Lox;
-}());
-exports.Lox = Lox;
-var lox = new Lox();
-lox.main(process.argv.slice(2)); //slice by 2 to get normalized arguments
+}
+function run(source) {
+    var scanner = new scanner_1.Scanner(source);
+    var tokens = scanner.scanTokens();
+    for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
+        var token = tokens_1[_i];
+        console.log(token);
+    }
+}
+function error(line, message) {
+    report(line, "", message);
+}
+exports.error = error;
+function report(line, where, message) {
+    console.error("[line " + line + "] Error " + where + ": " + message);
+    hadError = true;
+}
 //# sourceMappingURL=lox.js.map

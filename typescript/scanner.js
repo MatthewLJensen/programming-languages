@@ -41,7 +41,6 @@ var Scanner = /** @class */ (function () {
         return this.current >= this.source.length;
     };
     Scanner.prototype.scanToken = function () {
-        var lox = new lox_1.Lox();
         var c = this.advance();
         switch (c) {
             case '(':
@@ -116,7 +115,7 @@ var Scanner = /** @class */ (function () {
                     this.identifier();
                 }
                 else {
-                    lox.error(this.line, "Unexpected character: " + c);
+                    lox_1.error(this.line, "Unexpected character: " + c);
                 }
                 break;
         }
@@ -154,8 +153,7 @@ var Scanner = /** @class */ (function () {
             this.advance();
         }
         if (this.isAtEnd()) {
-            var lox = new lox_1.Lox();
-            lox.error(this.line, "Unterminated string.");
+            lox_1.error(this.line, "Unterminated string.");
             return;
         }
         // The closing ".
@@ -189,13 +187,12 @@ var Scanner = /** @class */ (function () {
         return this.isAlpha(c) || this.isDigit(c);
     };
     Scanner.prototype.identifier = function () {
-        while (this.isAlphaNumeric(this.peek())) {
+        while (this.isAlphaNumeric(this.peek()))
             this.advance();
-        }
         var text = this.source.slice(this.start, this.current);
         var type = this.keywords.get(text);
         if (type == null) {
-            this.addToken(tokenType_1.TokenType.IDENTIFIER);
+            type = tokenType_1.TokenType.IDENTIFIER;
         }
         this.addToken(type);
     };
