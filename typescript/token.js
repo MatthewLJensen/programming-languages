@@ -8,7 +8,7 @@ var Token = /** @class */ (function () {
         this.line = line;
     }
     Token.prototype.toString = function () {
-        return this.type + " " + this.lexeme + " " + this.literal;
+        return this.type.name() + " " + this.lexeme + " " + this.literal;
     };
     return Token;
 }());
