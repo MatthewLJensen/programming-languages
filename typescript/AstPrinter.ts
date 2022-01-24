@@ -3,7 +3,7 @@ import * as Stmt from "./Stmt"
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 
-class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
+export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
 
     printExpr(expr: Expr.Expr): string {
         return expr.accept(this)

@@ -2,7 +2,10 @@ import * as fs from 'fs';
 import { Scanner } from './scanner';
 import * as readline from 'readline';
 import { Token } from './token';
-
+import { TokenType } from './tokenType';
+import { Expr } from "./Expr"
+import { Parser } from "./parser"
+import { AstPrinter } from "./AstPrinter"
 
 let hadError: boolean = false
 const args = process.argv.slice(2)
@@ -52,9 +55,16 @@ function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
 
-    for (let token of tokens) {
-        console.log(token.toString())
-    }
+    // for (let token of tokens) {
+    //     console.log(token.toString())
+    // }
+    const parser: Parser = new Parser(tokens)
+    const expression: Expr = parser.parse()
+
+    // stop if there was a syntax error.
+    if (hadError) return
+    
+    console.log(new AstPrinter().printExpr(expression))
 }
 
 export function error(line: number, message: string) {
@@ -66,5 +76,12 @@ function report(line: number, where: string, message: string) {
     hadError = true
 }
 
+export function tokenError(token: Token, message: string){
+    if (token.type == TokenType.EOF) {
+        report(token.line, " at end", message)
+    }else {
+        report (token.line, " at '" + token.lexeme + "'", message)
+    }
+}
 
 
