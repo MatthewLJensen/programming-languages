@@ -7,18 +7,39 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitBinaryExpr(expr: Expr.Binary): Object {
-        const left: Object = evaluate(expr.left);
-        const right: Object = evaluate(expr.right); 
-    
+        const left: Object = evaluate(expr.left)
+        const right: Object = evaluate(expr.right)
+
         switch (expr.operator.type) {
-          case TokenType.MINUS:
-            return (left as number) - (right as number)
-          case TokenType.SLASH:
-            return (left as number) / (right as number)
-          case TokenType.STAR:
-            return (left as number) * (right as number)
+            case TokenType.GREATER:
+                return (left as number) > (right as number)
+            case TokenType.GREATER_EQUAL:
+                return (left as number) >= (right as number)
+            case TokenType.LESS:
+                return (left as number) < (right as number)
+            case TokenType.LESS_EQUAL:
+                return (left as number) <= (right as number)
+
+            case TokenType.MINUS:
+                return (left as number) - (right as number)
+            case TokenType.PLUS:
+                if ((typeof left == "number") && (typeof right == "number")) {
+                    return (left as number) + (right as number);
+                }
+
+                if ((typeof left == "string") && (typeof right == "string")) {
+                    return (left as string) + (right as string);
+                }
+                break
+            case TokenType.SLASH:
+                return (left as number) / (right as number)
+            case TokenType.STAR:
+                return (left as number) * (right as number)
+            case TokenType.BANG_EQUAL: return !isEqual(left, right);
+            case TokenType.EQUAL_EQUAL: return isEqual(left, right);
+
         }
-    
+
         // Unreachable.
         return null;
     }
@@ -103,3 +124,10 @@ const isTruthy = (object: Object): boolean => {
     if (object instanceof Boolean) return object as boolean;
     return true;
 }
+
+const isEqual = (a: Object, b: Object): boolean => {
+    if (a == null && b == null) return true;
+    if (a == null) return false;
+
+    return a == b; // should I be concerned about differences between java's .equal() method and javascript's == operator? Perhaps I should use ===?
+  }
