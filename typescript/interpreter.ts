@@ -8,19 +8,24 @@ import { runtimeError } from "./lox"
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     interpret(expression: Expr.Expr) {
         try {
-            const value: Object = evaluate(expression);
+            const value: Object = this.evaluate(expression);
             console.log(stringify(value));
           } catch (error) {
+              console.log(error)
             runtimeError(error);
           }
+    }
+
+    evaluate(expr: Expr.Expr): Object {
+        return expr.accept(this);
     }
 
     visitAssignExpr(expr: Expr.Assign): Object {
         throw new Error("Method not implemented.")
     }
     visitBinaryExpr(expr: Expr.Binary): Object {
-        const left: Object = evaluate(expr.left)
-        const right: Object = evaluate(expr.right)
+        const left: Object = this.evaluate(expr.left)
+        const right: Object = this.evaluate(expr.right)
 
         switch (expr.operator.type) {
             case TokenType.GREATER:
@@ -70,7 +75,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitGroupingExpr(expr: Expr.Grouping): Object {
-        return evaluate(expr.expression)
+        return this.evaluate(expr.expression)
     }
     visitLiteralExpr(expr: Expr.Literal): Object {
         return expr.value
@@ -88,7 +93,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitUnaryExpr(expr: Expr.Unary): Object {
-        const right: Object = evaluate(expr.right);
+        const right: Object = this.evaluate(expr.right);
 
         switch (expr.operator.type) {
             case TokenType.BANG:
@@ -136,9 +141,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
 }
 
-const evaluate = (expr: Expr.Expr): Object => {
-    return expr.accept(this);
-}
+
 
 const isTruthy = (object: Object): boolean => {
     if (object == null) return false;
