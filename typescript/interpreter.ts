@@ -1,8 +1,20 @@
 import * as Expr from "./Expr"
 import * as Stmt from "./Stmt"
 import { TokenType } from "./tokenType"
+import { Token } from "./token"
+import { RuntimeError } from "./runtimeError"
+import { runtimeError } from "./lox"
 
-class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
+export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
+    interpret(expression: Expr.Expr) {
+        try {
+            const value: Object = evaluate(expression);
+            console.log(stringify(value));
+          } catch (error) {
+            runtimeError(error);
+          }
+    }
+
     visitAssignExpr(expr: Expr.Assign): Object {
         throw new Error("Method not implemented.")
     }
@@ -12,15 +24,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         switch (expr.operator.type) {
             case TokenType.GREATER:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) > (right as number)
             case TokenType.GREATER_EQUAL:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) >= (right as number)
             case TokenType.LESS:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) < (right as number)
             case TokenType.LESS_EQUAL:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) <= (right as number)
 
             case TokenType.MINUS:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) - (right as number)
             case TokenType.PLUS:
                 if ((typeof left == "number") && (typeof right == "number")) {
@@ -30,10 +47,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
                 if ((typeof left == "string") && (typeof right == "string")) {
                     return (left as string) + (right as string);
                 }
-                break
+                throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.")
+
             case TokenType.SLASH:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) / (right as number)
             case TokenType.STAR:
+                checkNumberOperands(expr.operator, left, right);
                 return (left as number) * (right as number)
             case TokenType.BANG_EQUAL: return !isEqual(left, right);
             case TokenType.EQUAL_EQUAL: return isEqual(left, right);
@@ -74,6 +94,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
             case TokenType.BANG:
                 return !isTruthy(right)
             case TokenType.MINUS:
+                checkNumberOperand(expr.operator, right)
                 return -right as number;
         }
 
@@ -130,4 +151,28 @@ const isEqual = (a: Object, b: Object): boolean => {
     if (a == null) return false;
 
     return a == b; // should I be concerned about differences between java's .equal() method and javascript's == operator? Perhaps I should use ===?
+}
+
+const stringify = (object: Object) => {
+    if (object == null) return "nil";
+
+    // I'm not sure that this is necessary in javascript
+    if (typeof object == "number") {
+      let text: string = object.toString();
+      if (text.endsWith(".0")) {
+        text = text.substring(0, text.length - 2);
+      }
+      return text;
+    }
+    return object.toString();
   }
+
+const checkNumberOperand = (operator: Token, operand: Object) => {
+    if (typeof operand == "number") return;
+    throw new RuntimeError(operator, "Operand must be a number.");
+}
+
+const checkNumberOperands = (operator: Token, left: Object, right: Object) => {
+    if ((typeof left == "number") && (typeof right == "number")) return;
+    throw new RuntimeError(operator, "Operands must be numbers.");
+}

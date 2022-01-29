@@ -6,8 +6,12 @@ import { TokenType } from './tokenType';
 import { Expr } from "./Expr"
 import { Parser } from "./parser"
 import { AstPrinter } from "./AstPrinter"
+import { RuntimeError } from './runtimeError';
+import { Interpreter } from "./interpreter"
 
+const interpreter: Interpreter = new Interpreter()
 let hadError: boolean = false
+let hadRuntimeError: boolean = false
 const args = process.argv.slice(2)
 
 if (args.length > 1) {
@@ -26,6 +30,7 @@ function runFile(path: string) {
 
     run(buffer)
     if (hadError) process.exit(65);
+    if (hadRuntimeError) process.exit(70);
 }
 
 function runPrompt() {
@@ -64,12 +69,18 @@ function run(source: string) {
     // stop if there was a syntax error.
     if (hadError) return
     
-    console.log(new AstPrinter().printExpr(expression))
+    //console.log(new AstPrinter().printExpr(expression))
+    interpreter.interpret(expression);
 }
 
 export function error(line: number, message: string) {
     report(line, "", message)
 }
+
+export function runtimeError(error: RuntimeError) {
+    console.log(error.message + "\n[line " + error.token.line + "]") // hopefully message is the right alternative for .getMessage in Java
+    hadRuntimeError = true;
+  }
 
 function report(line: number, where: string, message: string) {
     console.error(`[line ${line}] Error ${where}: ${message}`)
