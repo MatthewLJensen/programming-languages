@@ -4,6 +4,7 @@ import { Token } from "./token"
 export interface Visitor<R> {
     visitAssignExpr(expr: Assign): R
     visitBinaryExpr(expr: Binary): R
+    visitTernaryExpr(expr: Ternary): R
     visitCallExpr(expr: Call): R
     visitGetExpr(expr: Get): R
     visitGroupingExpr(expr: Grouping): R
@@ -15,6 +16,7 @@ export interface Visitor<R> {
     visitUnaryExpr(expr: Unary): R
     visitVariableExpr(expr: Variable): R
 }
+
 export abstract class Expr {
     abstract accept<R>(visitor: Visitor<R>): R
 }
@@ -48,6 +50,23 @@ export class Binary extends Expr {
 
     accept = <R>(visitor: Visitor<R>): R => {
             return visitor.visitBinaryExpr(this)
+        }
+}
+
+export class Ternary extends Expr {
+    public expression: Expr
+    public left: Expr
+    public right: Expr
+
+    constructor(expression: Expr, left: Expr, right: Expr,    ) {
+        super()
+        this.expression = expression
+        this.left = left
+        this.right = right
+    }
+
+    accept = <R>(visitor: Visitor<R>): R => {
+            return visitor.visitTernaryExpr(this)
         }
 }
 

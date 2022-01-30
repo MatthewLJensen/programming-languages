@@ -6,6 +6,7 @@ import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./lox"
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
+
     interpret(expression: Expr.Expr) {
         try {
             const value: Object = this.evaluate(expression);
@@ -67,6 +68,19 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         // Unreachable.
         return null;
+    }
+    visitTernaryExpr(expr: Expr.Ternary): Object {
+        const test: Object = this.evaluate(expr.expression)
+
+
+
+        if (test){
+            const left: Object = this.evaluate(expr.left);
+            return left
+        }else{
+            const right: Object = this.evaluate(expr.right);
+            return right
+        }
     }
     visitCallExpr(expr: Expr.Call): Object {
         throw new Error("Method not implemented.")

@@ -1,6 +1,6 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary } from "./Expr"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary } from "./Expr"
 import { tokenError } from './lox';
 
 class ParseError extends Error { } // theoretically, this should be a subclass, does it need to be?
@@ -15,7 +15,20 @@ export class Parser {
     }
 
     private expression(): Expr {
-        return this.equality()
+        return this.ternaryConditional()
+    }
+
+    private ternaryConditional(): Expr {
+        let expr: Expr = this.equality()
+
+        if(this.match(TokenType.QUESTION)){
+            let left: Expr = this.ternaryConditional()
+            if (this.match(TokenType.COLON)){
+                let right: Expr = this.ternaryConditional()
+                return new Ternary(expr, left, right)
+            }
+        }
+        return expr
     }
 
     private equality(): Expr {

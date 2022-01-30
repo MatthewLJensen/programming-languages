@@ -18,6 +18,10 @@ export class RpnPrinter implements Expr.Visitor<string> {
         return `${this.recurse(expr.left)} ${this.recurse(expr.right)} ${expr.operator.lexeme}`
     }
 
+    visitTernaryExpr(expr: Expr.Ternary): string {
+        throw new Error("Method not implemented.")
+    }
+
     visitCallExpr(expr: Expr.Call): string {
         throw new Error("Method not implemented.");
     }

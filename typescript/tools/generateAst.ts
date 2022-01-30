@@ -6,33 +6,28 @@ const dependencies = [
 ]
 
 const expressions = [
-    //> Statements and State assign-expr
     "Assign   : Token name, Expr value",
-    //< Statements and State assign-expr
+
     "Binary   : Expr left, Token operator, Expr right",
-    //> Functions call-expr
+
+    "Ternary  : Expr expression, Expr left, Expr right",
+
     "Call     : Expr callee, Token paren, Expr[] args", //altered from book in 2 ways. Changed List<Expr> to Expr[] and arguments to args
-    //< Functions call-expr
-    //> Classes get-ast
+
     "Get      : Expr object, Token name",
-    //< Classes get-ast
-    "Grouping : Expr expression", "Literal  : Object value",
-    //> Control Flow logical-ast
+
+    "Grouping : Expr expression", 
+    
+    "Literal  : Object value",
+
     "Logical  : Expr left, Token operator, Expr right",
-    //< Control Flow logical-ast
-    //> Classes set-ast
+
     "Set      : Expr object, Token name, Expr value",
-    //< Classes set-ast
-    //> Inheritance super-expr
+
     "Super    : Token keyword, Token method",
-    //< Inheritance super-expr
-    //> Classes this-ast
+
     "This     : Token keyword",
-    //< Classes this-ast
-    /* Representing Code call-define-ast < Statements and State
-       var-expr "Unary    : Token operator, Expr right"
-    */
-    //> Statements and State var-expr
+
     "Unary    : Token operator, Expr right",
     "Variable : Token name"
 ]

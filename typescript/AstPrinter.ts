@@ -4,7 +4,6 @@ import { Token } from "./token"
 import { TokenType } from "./tokenType"
 
 export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
-
     printExpr(expr: Expr.Expr): string {
         return expr.accept(this)
     }
@@ -47,6 +46,11 @@ export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
     visitAssignExpr(expr: Expr.Assign): string {
         throw new Error("Method not implemented.");
     }
+
+    visitTernaryExpr(expr: Expr.Ternary): string {
+        throw new Error("Method not implemented.")
+    }
+
     visitBinaryExpr(expr: Expr.Binary): string {
         return this.parenthesize(expr.operator.lexeme, expr.left, expr.right)
     }
