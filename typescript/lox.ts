@@ -6,6 +6,7 @@ import { TokenType } from './tokenType';
 import { Expr } from "./Expr"
 import { Parser } from "./parser"
 import { AstPrinter } from "./AstPrinter"
+import { RpnPrinter } from "./RpnPrinter"
 import { RuntimeError } from './runtimeError';
 import { Interpreter } from "./interpreter"
 
@@ -71,6 +72,9 @@ function run(source: string) {
     if (hadError) return
     
     //console.log(new AstPrinter().printExpr(expression))
+    
+    // uncomment to print the RPN version of the expression before evaluating it.
+    //console.log(new RpnPrinter().rpnPrintExpr(expression))
     interpreter.interpret(expression);
 }
 
