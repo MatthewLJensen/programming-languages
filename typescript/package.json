@@ -1,6 +1,11 @@
 {
+  "scripts": {
+    "dev": "nodemon --config nodemon.json lox.ts",
+    "dev:debug": "nodemon --config nodemon.json --inspect-brk lox.ts"
+  },
   "devDependencies": {
-    "@types/node": "^17.0.8"
+    "@types/node": "^17.0.8",
+    "ts-node": "^10.4.0"
   },
   "dependencies": {
     "colors": "^1.4.0",

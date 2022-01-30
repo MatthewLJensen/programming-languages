@@ -6,5 +6,7 @@ export class RuntimeError extends Error {
     constructor(token: Token, message: string) {
       super(message);
       this.token = token;
+
+      Object.setPrototypeOf(this, RuntimeError.prototype)
     }
   }

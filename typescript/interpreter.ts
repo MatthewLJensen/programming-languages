@@ -10,10 +10,10 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         try {
             const value: Object = this.evaluate(expression);
             console.log(stringify(value));
-          } catch (error) {
-              console.log(error)
+        } catch (error) {
+            //console.log(error)
             runtimeError(error);
-          }
+        }
     }
 
     evaluate(expr: Expr.Expr): Object {
@@ -161,14 +161,14 @@ const stringify = (object: Object) => {
 
     // I'm not sure that this is necessary in javascript
     if (typeof object == "number") {
-      let text: string = object.toString();
-      if (text.endsWith(".0")) {
-        text = text.substring(0, text.length - 2);
-      }
-      return text;
+        let text: string = object.toString();
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length - 2);
+        }
+        return text;
     }
     return object.toString();
-  }
+}
 
 const checkNumberOperand = (operator: Token, operand: Object) => {
     if (typeof operand == "number") return;

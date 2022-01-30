@@ -37,7 +37,8 @@ function runPrompt() {
 
     const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        terminal: false // prevents printing of first user input line within REPL
     })
 
     const prompt = () => {
