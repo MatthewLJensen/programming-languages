@@ -56,7 +56,13 @@ export class RpnPrinter implements Expr.Visitor<string> {
 
     //
     visitUnaryExpr(expr: Expr.Unary): string {
-        return `${this.recurse(expr.right)} ${expr.operator.lexeme}`
+        if (expr.operator.type == TokenType.BANG) {
+            return `${this.recurse(expr.right)} not`
+        }else if (expr.operator.type == TokenType.MINUS) {
+            return `${this.recurse(expr.right)} neg`
+        }else {
+            return `${this.recurse(expr.right)} ${expr.operator.lexeme}`
+        }
     }
 
 

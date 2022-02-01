@@ -159,7 +159,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
 const isTruthy = (object: Object): boolean => {
     if (object == null) return false;
-    if (object instanceof Boolean) return object as boolean;
+    if (typeof object == "boolean") return object as boolean;
     return true;
 }
 
