@@ -43,7 +43,7 @@ function runPrompt() {
     })
 
     const prompt = () => {
-        rl.question('> ', line => {
+        rl.question('', line => {
             switch (line) {
                 case null:
                     break
