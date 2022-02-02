@@ -3,11 +3,9 @@ import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary } from "./Expr"
 import { tokenError } from './lox';
 
-class ParseError extends Error { } // theoretically, this should be a subclass, does it need to be?
-
+class ParseError extends Error { }
 export class Parser {
-
-    private tokens: Token[] // should be final
+    private tokens: Token[]
     private current: number = 0
 
     constructor(tokens: Token[]) {
@@ -26,6 +24,8 @@ export class Parser {
             if (this.match(TokenType.COLON)){
                 let right: Expr = this.ternaryConditional()
                 return new Ternary(expr, left, right)
+            }else{
+                throw this.error(this.peek(), "Expect '?' to have matching ':'.")
             }
         }
         return expr
@@ -102,7 +102,7 @@ export class Parser {
             return new Grouping(expr)
         }
 
-        throw this.error(this.peek(), "Expect expression")
+        throw this.error(this.peek(), "Expect expression.")
 
     }
 
@@ -113,7 +113,6 @@ export class Parser {
             return null
         }
     }
-
 
     private match(...types: TokenType[]): boolean {
         for (let type of types) {

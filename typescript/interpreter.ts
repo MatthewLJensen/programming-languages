@@ -12,7 +12,6 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
             const value: Object = this.evaluate(expression);
             console.log(stringify(value));
         } catch (error) {
-            //console.log(error)
             runtimeError(error);
         }
     }

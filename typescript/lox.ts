@@ -95,7 +95,7 @@ export function runtimeError(error: RuntimeError) {
 }
 
 function report(line: number, where: string, message: string) {
-    console.error(`[line ${line}] Error ${where}: ${message}`)
+    console.log(`[line ${line}] Error ${where}: ${message}`)
     hadError = true
 }
 
