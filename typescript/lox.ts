@@ -14,6 +14,13 @@ const interpreter: Interpreter = new Interpreter()
 let hadError: boolean = false
 let hadRuntimeError: boolean = false
 const args = process.argv.slice(2)
+let rpn = false
+
+// check for --rpn flag. if it is present, print the RPN version of the expression.
+if (args.length > 0 && args[0] === '--rpn') {
+    rpn = true
+    args.splice(0, 1)
+}
 
 if (args.length > 1) {
     console.log("Usage: tlox [script]")
@@ -70,12 +77,12 @@ function run(source: string) {
 
     // stop if there was a syntax error.
     if (hadError) return
-    
+
     //console.log(new AstPrinter().printExpr(expression))
-    
-    // uncomment to print the RPN version of the expression before evaluating it.
-    //console.log(new RpnPrinter().rpnPrintExpr(expression))
-    interpreter.interpret(expression);
+    if (rpn)
+        console.log(new RpnPrinter().rpnPrintExpr(expression))
+    else
+        interpreter.interpret(expression);
 }
 
 export function error(line: number, message: string) {
@@ -85,18 +92,18 @@ export function error(line: number, message: string) {
 export function runtimeError(error: RuntimeError) {
     console.log(error.message + "\n[line " + error.token.line + "]") // hopefully message is the right alternative for .getMessage in Java
     hadRuntimeError = true;
-  }
+}
 
 function report(line: number, where: string, message: string) {
     console.error(`[line ${line}] Error ${where}: ${message}`)
     hadError = true
 }
 
-export function tokenError(token: Token, message: string){
+export function tokenError(token: Token, message: string) {
     if (token.type == TokenType.EOF) {
         report(token.line, "at end", message)
-    }else {
-        report (token.line, "at '" + token.lexeme + "'", message)
+    } else {
+        report(token.line, "at '" + token.lexeme + "'", message)
     }
 }
 
