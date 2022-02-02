@@ -30,18 +30,29 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         switch (expr.operator.type) {
             case TokenType.GREATER:
-                checkNumberOperands(expr.operator, left, right);
-                return (left as number) > (right as number)
+                checkNumberOrStringOperands(expr.operator, left, right);
+                if ((typeof left == "number") && (typeof right == "number"))
+                    return (left as number) > (right as number)
+                if ((typeof left == "string") && (typeof right == "string"))
+                    return (left as string) > (right as string)
             case TokenType.GREATER_EQUAL:
-                checkNumberOperands(expr.operator, left, right);
-                return (left as number) >= (right as number)
+                checkNumberOrStringOperands(expr.operator, left, right);
+                if ((typeof left == "number") && (typeof right == "number"))
+                    return (left as number) >= (right as number)
+                if ((typeof left == "string") && (typeof right == "string"))
+                    return (left as string) >= (right as string)
             case TokenType.LESS:
-                checkNumberOperands(expr.operator, left, right);
-                return (left as number) < (right as number)
+                checkNumberOrStringOperands(expr.operator, left, right);
+                if ((typeof left == "number") && (typeof right == "number"))
+                    return (left as number) < (right as number)
+                if ((typeof left == "string") && (typeof right == "string"))
+                    return (left as string) < (right as string)
             case TokenType.LESS_EQUAL:
-                checkNumberOperands(expr.operator, left, right);
-                return (left as number) <= (right as number)
-
+                checkNumberOrStringOperands(expr.operator, left, right);
+                if ((typeof left == "number") && (typeof right == "number"))
+                    return (left as number) <= (right as number)
+                if ((typeof left == "string") && (typeof right == "string"))
+                    return (left as string) <= (right as string)
             case TokenType.MINUS:
                 checkNumberOperands(expr.operator, left, right);
                 return (left as number) - (right as number)
@@ -65,16 +76,13 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
             case TokenType.EQUAL_EQUAL: return isEqual(left, right);
 
         }
-
         // Unreachable.
         return null;
     }
     visitTernaryExpr(expr: Expr.Ternary): Object {
         const test: Object = this.evaluate(expr.expression)
 
-
-
-        if (test){
+        if (isTruthy(test)){
             const left: Object = this.evaluate(expr.left);
             return left
         }else{
@@ -123,7 +131,6 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitVariableExpr(expr: Expr.Variable): Object {
         throw new Error("Method not implemented.")
     }
-
     visitBlockStmt(stmt: Stmt.Block): Object {
         throw new Error("Method not implemented.")
     }
@@ -151,11 +158,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitWhileStmt(stmt: Stmt.While): Object {
         throw new Error("Method not implemented.")
     }
-
-
 }
-
-
 
 const isTruthy = (object: Object): boolean => {
     if (object == null) return false;
@@ -192,4 +195,10 @@ const checkNumberOperand = (operator: Token, operand: Object) => {
 const checkNumberOperands = (operator: Token, left: Object, right: Object) => {
     if ((typeof left == "number") && (typeof right == "number")) return;
     throw new RuntimeError(operator, "Operands must be numbers.");
+}
+
+const checkNumberOrStringOperands = (operator: Token, left: Object, right: Object) => {
+    if ((typeof left == "number") && (typeof right == "number")) return;
+    if ((typeof left == "string") && (typeof right == "string")) return;
+    throw new RuntimeError(operator, "Operands must be both numbers or both strings.");
 }
