@@ -50,6 +50,7 @@ function runPrompt() {
     })
 
     const prompt = () => {
+        console.error("> ")
         rl.question('', line => {
             switch (line) {
                 case null:
@@ -61,17 +62,12 @@ function runPrompt() {
             prompt()
         })
     }
-
     prompt()
 }
 
 function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
-
-    // for (let token of tokens) {
-    //     console.log(token.toString())
-    // }
     const parser: Parser = new Parser(tokens)
     const expression: Expr = parser.parse()
 
