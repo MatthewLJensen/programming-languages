@@ -1,6 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary } from "./Expr"
+import { Stmt, Print, Expression } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -14,6 +15,27 @@ export class Parser {
 
     private expression(): Expr {
         return this.ternaryConditional()
+    }
+
+    private statement(): Stmt {
+        if (this.match(TokenType.PRINT)) return this.printStatement()
+        //if (this.match(TokenType.FOR)) return this.forStatement()
+        //if (this.match(TokenType.IF)) return this.ifStatement()
+        //if (this.match(TokenType.WHILE)) return this.whileStatement()
+        //if (this.match(TokenType.LEFT_BRACE)) return new Stmt.Block(this.block())
+        return this.expressionStatement()
+    }
+
+    private printStatement(): Stmt {
+        let value: Expr = this.expression()
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return new Print(value)
+    }
+
+    private expressionStatement(): Stmt {
+        let expr: Expr = this.expression()
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return new Expression(expr)
     }
 
     private ternaryConditional(): Expr {
@@ -106,12 +128,14 @@ export class Parser {
 
     }
 
-    parse(): Expr {
-        try {
-            return this.expression()
-        } catch (error) {
-            return null
+    parse(): Stmt[] {
+        let statements: Stmt[] = []
+
+        while (!this.isAtEnd()) {
+            statements.push(this.declaration())
         }
+
+        return statements
     }
 
     private match(...types: TokenType[]): boolean {
