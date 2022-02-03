@@ -5,6 +5,10 @@ var general_tests = [
     '(15/5) * (3 + 4) - (2 + 3) * (4 - 3) / (5 - 3)     ; 18.5',
     '15 * 3 + 4 * 5                                     ; 65',
     '15 * 3 + 4 * 5 / 2                                 ; 55',
+    '3.5 * 3.5                                          ; 12.25',
+    '3.5 * 3.5 * 3.5                                    ; 42.875',
+    '14.5 - 3.7                                         ; 10.8',
+    '14.5 - 3.7 + 3.7                                   ; 14.5',
     '(15 * 3 + 4 * 5 / 2 - 3                            ; [line 1] Error at end: Expect \')\' after expression.',
     '"cat" + "dog"                                      ; catdog',
     '"cat" > 5                                          ; Operands must be both numbers or both strings.\n[line 1]',
@@ -27,7 +31,20 @@ var rpn_tests = [
     "15 <= 15                                           ; 15 15 <=",
     "15 > 15                                            ; 15 15 >",
     "15 >= 15                                           ; 15 15 >=",
+    "14.7 + 15.3                                        ; 14.7 15.3 +",
+    "14.7 + 15.3 * 2                                    ; 14.7 15.3 2 * +",
+    "14.7 + 15.3 * 2 + 3.5                              ; 14.7 15.3 2 * + 3.5 +",
+    "125.32 / 2.5                                       ; 125.32 2.5 /",
+    "125.37 - 125.32 / 2.5                              ; 125.37 125.32 2.5 / -",    
     "14 < 15 == true                                    ; 14 15 < true ==",
+    "\"cow\" < \"kitten\"                               ; cow kitten <",
+    "\"cow\" <= \"kitten\"                              ; cow kitten <=",
+    "\"cow\" > \"kitten\"                               ; cow kitten >",
+    "\"cow\" >= \"kitten\"                              ; cow kitten >=",
+    "\"cow\" == \"cow\"                                 ; cow cow ==",
+    "\"cow\" != \"cow\"                                 ; cow cow !=",
+    "\"Hello\" + \"World\"                              ; Hello World +",
+
 
 ]
 var ternary_tests = [
@@ -44,7 +61,8 @@ var ternary_tests = [
     '\"\" ? 1 : 2 + 3                                   ; 1',
     'nil ? 1 : 2 + 3                                    ; 5',
     'nil ? nil ? 1 : 2 + 3 : 4                          ; 4',
-    'true ? 15                                          ; [line 1] Error at end: Expect \'?\' to have matching \':\'.',                              
+    'true ? 15                                          ; [line 1] Error at end: Expect \'?\' to have matching \':\'.', 
+    '\"cat\" ? 15.75 : \"dog\"                          ; 15.75',                             
 ]
 var string_comparison_tests = [
     'String Comparison Tests                            ; ',
