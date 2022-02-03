@@ -162,14 +162,7 @@ incredibly common &ldquo;zero or more comma-separated things&rdquo; pattern. The
 sophisticated metasyntaxes that handle this better, but in our BNF and in many
 language specs I&rsquo;ve seen, it is this cumbersome.</p>
 <p>Over in our syntax tree generator, we add a <span name="call-ast">new
-node</span>.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Binary   : Expr left, Token operator, Expr right&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Call     : Expr callee, Token paren, List&lt;Expr&gt; arguments&quot;</span>,
-</pre><pre class="insert-after">      &quot;Grouping : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+node</span>.</p><strong>ERROR: Missing snippet call-expr</strong>
 
 <aside name="call-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#call-expression">Appendix II</a>.</p>
@@ -596,15 +589,7 @@ block statements use. The parameter list uses this rule:</p>
 </pre></div>
 <p>It&rsquo;s like the earlier <code>arguments</code> rule, except that each parameter is an
 identifier, not an expression. That&rsquo;s a lot of new syntax for the parser to chew
-through, but the resulting AST <span name="fun-ast">node</span> isn&rsquo;t too bad.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Expression : Expr expression&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Function   : Token name, List&lt;Token&gt; params,&quot;</span> +
-                  <span class="s">&quot; List&lt;Stmt&gt; body&quot;</span>,
-</pre><pre class="insert-after">      &quot;If         : Expr condition, Stmt thenBranch,&quot; +
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+through, but the resulting AST <span name="fun-ast">node</span> isn&rsquo;t too bad.</p><strong>ERROR: Missing snippet function-ast</strong>
 
 <aside name="fun-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#function-statement">Appendix II</a>.</p>
@@ -891,14 +876,7 @@ implementation of <code>call()</code> returns <code>null</code> at the end. In t
 omit the value in a <code>return</code> statement, we simply treat it as equivalent to:</p>
 <div class="codehilite"><pre><span class="k">return</span> <span class="k">nil</span>;
 </pre></div>
-<p>Over in our AST generator, we add a <span name="return-ast">new node</span>.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Print      : Expr expression&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Return     : Token keyword, Expr value&quot;</span>,
-</pre><pre class="insert-after">      &quot;Var        : Token name, Expr initializer&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+<p>Over in our AST generator, we add a <span name="return-ast">new node</span>.</p><strong>ERROR: Missing snippet return-ast</strong>
 
 <aside name="return-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#return-statement">Appendix II</a>.</p>

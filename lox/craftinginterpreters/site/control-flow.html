@@ -218,15 +218,7 @@ be one that ends in a semicolon.</p>
 <p>An <code>if</code> statement has an expression for the condition, then a statement to execute
 if the condition is truthy. Optionally, it may also have an <code>else</code> keyword and a
 statement to execute if the condition is falsey. The <span name="if-ast">syntax
-tree node</span> has fields for each of those three pieces.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Expression : Expr expression&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;If         : Expr condition, Stmt thenBranch,&quot;</span> +
-                  <span class="s">&quot; Stmt elseBranch&quot;</span>,
-</pre><pre class="insert-after">      &quot;Print      : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+tree node</span> has fields for each of those three pieces.</p><strong>ERROR: Missing snippet if-ast</strong>
 
 <aside name="if-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#if-statement">Appendix II</a>.</p>
@@ -376,14 +368,7 @@ since they have the same fields. But then <code>visitBinaryExpr()</code> would h
 check to see if the operator is one of the logical operators and use a different
 code path to handle the short circuiting. I think it&rsquo;s cleaner to define a <span
 name="logical-ast">new class</span> for these operators so that they get their
-own visit method.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Literal  : Object value&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Logical  : Expr left, Token operator, Expr right&quot;</span>,
-</pre><pre class="insert-after">      &quot;Unary    : Token operator, Expr right&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+own visit method.</p><strong>ERROR: Missing snippet logical-ast</strong>
 
 <aside name="logical-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#logical-expression">Appendix II</a>.</p>
@@ -488,16 +473,7 @@ loop is the simpler one, so we&rsquo;ll start there. Its grammar is the same as 
 <p>We add another clause to the statement rule that points to the new rule for
 while. It takes a <code>while</code> keyword, followed by a parenthesized condition
 expression, then a statement for the body. That new grammar rule gets a <span
-name="while-ast">syntax tree node</span>.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Print      : Expr expression&quot;,
-</pre><pre class="insert-before">      <span class="s">&quot;Var        : Token name, Expr initializer&quot;</span><span class="insert-comma">,</span>
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()<br>
-add <em>&ldquo;,&rdquo;</em> to previous line</div>
-<pre class="insert">      <span class="s">&quot;While      : Expr condition, Stmt body&quot;</span>
-</pre><pre class="insert-after">    ));
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>(), add <em>&ldquo;,&rdquo;</em> to previous line</div>
+name="while-ast">syntax tree node</span>.</p><strong>ERROR: Missing snippet while-ast</strong>
 
 <aside name="while-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#while-statement">Appendix II</a>.</p>

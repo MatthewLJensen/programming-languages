@@ -169,16 +169,7 @@ superclass clause is optional because you don&rsquo;t <em>have</em> to have a su
 Unlike some other object-oriented languages like Java, Lox has no root &ldquo;Object&rdquo;
 class that everything inherits from, so when you omit the superclass clause, the
 class has <em>no</em> superclass, not even an implicit one.</p>
-<p>We want to capture this new syntax in the class declaration&rsquo;s AST node.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Block      : List&lt;Stmt&gt; statements&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()<br>
-replace 1 line</div>
-<pre class="insert">      <span class="s">&quot;Class      : Token name, Expr.Variable superclass,&quot;</span> +
-                  <span class="s">&quot; List&lt;Stmt.Function&gt; methods&quot;</span>,
-</pre><pre class="insert-after">      &quot;Expression : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>(), replace 1 line</div>
+<p>We want to capture this new syntax in the class declaration&rsquo;s AST node.</p><strong>ERROR: Missing snippet superclass-ast</strong>
 
 <p>You might be surprised that we store the superclass name as an Expr.Variable,
 not a Token. The grammar restricts the superclass clause to a single identifier,
@@ -426,14 +417,7 @@ you can get a handle to a superclass method and invoke it separately.</p>
 </pre></div>
 <p>So the <code>super</code> expression itself contains only the token for the <code>super</code> keyword
 and the name of the method being looked up. The corresponding <span
-name="super-ast">syntax tree node</span> is thus:</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Set      : Expr object, Token name, Expr value&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Super    : Token keyword, Token method&quot;</span>,
-</pre><pre class="insert-after">      &quot;This     : Token keyword&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+name="super-ast">syntax tree node</span> is thus:</p><strong>ERROR: Missing snippet super-expr</strong>
 
 <aside name="super-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#super-expression">Appendix II</a>.</p>

@@ -199,14 +199,7 @@ body. Here&rsquo;s an example:</p>
 class declaration. Instances are loose bags of data and you can freely add
 fields to them as you see fit using normal imperative code.</p>
 <p>Over in our AST generator, the <code>classDecl</code> grammar rule gets its own statement
-<span name="class-ast">node</span>.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Block      : List&lt;Stmt&gt; statements&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Class      : Token name, List&lt;Stmt.Function&gt; methods&quot;</span>,
-</pre><pre class="insert-after">      &quot;Expression : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+<span name="class-ast">node</span>.</p><strong>ERROR: Missing snippet class-ast</strong>
 
 <aside name="class-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#class-statement">Appendix II</a>.</p>
@@ -448,14 +441,7 @@ the grammar by replacing the existing <code>call</code> rule with:</p>
 calls and dotted property accesses. &ldquo;Property access&rdquo; is a mouthful, so from
 here on out, we&rsquo;ll call these &ldquo;get expressions&rdquo;.</p>
 <h3><a href="#get-expressions" id="get-expressions"><small>12&#8202;.&#8202;4&#8202;.&#8202;1</small>Get expressions</a></h3>
-<p>The <span name="get-ast">syntax tree node</span> is:</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Call     : Expr callee, Token paren, List&lt;Expr&gt; arguments&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Get      : Expr object, Token name&quot;</span>,
-</pre><pre class="insert-after">      &quot;Grouping : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+<p>The <span name="get-ast">syntax tree node</span> is:</p><strong>ERROR: Missing snippet get-ast</strong>
 
 <aside name="get-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#get-expression">Appendix II</a>.</p>
@@ -589,14 +575,7 @@ high-precedence expression before the last dot, including any number of
 <code>.omelette</code> and <code>.filling</code> parts are both <em>get</em> expressions.</p>
 <p>Just as we have two separate AST nodes for variable access and variable
 assignment, we need a <span name="set-ast">second setter node</span> to
-complement our getter node.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Logical  : Expr left, Token operator, Expr right&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Set      : Expr object, Token name, Expr value&quot;</span>,
-</pre><pre class="insert-after">      &quot;Unary    : Token operator, Expr right&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+complement our getter node.</p><strong>ERROR: Missing snippet set-ast</strong>
 
 <aside name="set-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#set-expression">Appendix II</a>.</p>
@@ -1024,14 +1003,7 @@ callback may want to hang on to and retain access to the original object<span cl
 <code>this</code> value<span class="em">&mdash;</span>that the method was associated with. Our existing support for
 closures and environment chains should do all this correctly.</p>
 <p>Let&rsquo;s code it up. The first step is adding <span name="this-ast">new
-syntax</span> for <code>this</code>.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Set      : Expr object, Token name, Expr value&quot;,
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;This     : Token keyword&quot;</span>,
-</pre><pre class="insert-after">      &quot;Unary    : Token operator, Expr right&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+syntax</span> for <code>this</code>.</p><strong>ERROR: Missing snippet this-ast</strong>
 
 <aside name="this-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#this-expression">Appendix II</a>.</p>

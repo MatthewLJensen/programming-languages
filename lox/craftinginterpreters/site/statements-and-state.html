@@ -193,20 +193,7 @@ another call to define Stmt and its <span name="stmt-ast">subclasses</span>.</p>
 <aside name="foresight">
 <p>Not really foresight: I wrote all the code for the book before I sliced it into
 chapters.</p>
-</aside>
-<div class="codehilite"><pre class="insert-before">      &quot;Unary    : Token operator, Expr right&quot;
-    ));
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">
-
-    <span class="i">defineAst</span>(<span class="i">outputDir</span>, <span class="s">&quot;Stmt&quot;</span>, <span class="t">Arrays</span>.<span class="i">asList</span>(
-      <span class="s">&quot;Expression : Expr expression&quot;</span>,
-      <span class="s">&quot;Print      : Expr expression&quot;</span>
-    ));
-</pre><pre class="insert-after">  }
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+</aside><strong>ERROR: Missing snippet stmt-ast</strong>
 
 <aside name="stmt-ast">
 <p>The generated code for the new nodes is in <a href="appendix-ii.html">Appendix II</a>: <a href="appendix-ii.html#expression-statement">Expression statement</a>, <a href="appendix-ii.html#print-statement">Print statement</a>.</p>
@@ -521,32 +508,14 @@ semicolon.</p>
 to be the name of the variable being accessed.</p>
 <p>These new grammar rules get their corresponding syntax trees. Over in the AST
 generator, we add a <span name="var-stmt-ast">new statement</span> node for a
-variable declaration.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Expression : Expr expression&quot;,
-</pre><pre class="insert-before">      <span class="s">&quot;Print      : Expr expression&quot;</span><span class="insert-comma">,</span>
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()<br>
-add <em>&ldquo;,&rdquo;</em> to previous line</div>
-<pre class="insert">      <span class="s">&quot;Var        : Token name, Expr initializer&quot;</span>
-</pre><pre class="insert-after">    ));
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>(), add <em>&ldquo;,&rdquo;</em> to previous line</div>
+variable declaration.</p><strong>ERROR: Missing snippet var-stmt-ast</strong>
 
 <aside name="var-stmt-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#variable-statement">Appendix II</a>.</p>
 </aside>
 <p>It stores the name token so we know what it&rsquo;s declaring, along with the
 initializer expression. (If there isn&rsquo;t an initializer, that field is <code>null</code>.)</p>
-<p>Then we add an expression node for accessing a variable.</p>
-<div class="codehilite"><pre class="insert-before">      &quot;Literal  : Object value&quot;,
-</pre><pre class="insert-before">      <span class="s">&quot;Unary    : Token operator, Expr right&quot;</span><span class="insert-comma">,</span>
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()<br>
-add <em>&ldquo;,&rdquo;</em> to previous line</div>
-<pre class="insert">      <span class="s">&quot;Variable : Token name&quot;</span>
-</pre><pre class="insert-after">    ));
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>(), add <em>&ldquo;,&rdquo;</em> to previous line</div>
+<p>Then we add an expression node for accessing a variable.</p><strong>ERROR: Missing snippet var-expr</strong>
 
 <p><span name="var-expr-ast">It&rsquo;s</span> simply a wrapper around the token for the
 variable name. That&rsquo;s it. As always, don&rsquo;t forget to run the AST generator
@@ -917,14 +886,7 @@ Later, <code>assignment</code> will get more complex when we add property setter
 objects, like:</p>
 <div class="codehilite"><pre><span class="i">instance</span>.<span class="i">field</span> = <span class="s">&quot;value&quot;</span>;
 </pre></div>
-<p>The easy part is adding the <span name="assign-ast">new syntax tree node</span>.</p>
-<div class="codehilite"><pre class="insert-before">    defineAst(outputDir, &quot;Expr&quot;, Arrays.asList(
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Assign   : Token name, Expr value&quot;</span>,
-</pre><pre class="insert-after">      &quot;Binary   : Expr left, Token operator, Expr right&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+<p>The easy part is adding the <span name="assign-ast">new syntax tree node</span>.</p><strong>ERROR: Missing snippet assign-expr</strong>
 
 <aside name="assign-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#assign-expression">Appendix II</a>.</p>
@@ -1325,14 +1287,7 @@ the grammar:</p>
 </pre></div>
 <p>A block is a (possibly empty) series of statements or declarations surrounded by
 curly braces. A block is itself a statement and can appear anywhere a statement
-is allowed. The <span name="block-ast">syntax tree</span> node looks like this:</p>
-<div class="codehilite"><pre class="insert-before">    defineAst(outputDir, &quot;Stmt&quot;, Arrays.asList(
-</pre><div class="source-file"><em>tool/GenerateAst.java</em><br>
-in <em>main</em>()</div>
-<pre class="insert">      <span class="s">&quot;Block      : List&lt;Stmt&gt; statements&quot;</span>,
-</pre><pre class="insert-after">      &quot;Expression : Expr expression&quot;,
-</pre></div>
-<div class="source-file-narrow"><em>tool/GenerateAst.java</em>, in <em>main</em>()</div>
+is allowed. The <span name="block-ast">syntax tree</span> node looks like this:</p><strong>ERROR: Missing snippet block-ast</strong>
 
 <aside name="block-ast">
 <p>The generated code for the new node is in <a href="appendix-ii.html#block-statement">Appendix II</a>.</p>
