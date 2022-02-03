@@ -9,7 +9,7 @@ var general_tests = [
     '"cat" + "dog"                                      ; catdog',
     '"cat" > 5                                          ; Operands must be both numbers or both strings.\n[line 1]',
     '-"cat"                                             ; Operand must be a number.\n[line 1]',
-    '!"cat"                                             ; Operand must be a number.\n[line 1]', // or false... which should this be? 
+    '!"cat"                                             ; false',
 ]
 var rpn_tests = [
     "RPN Tests                                          ;'--rpn'",
@@ -21,6 +21,14 @@ var rpn_tests = [
     "!(15 + 5)                                          ; 15 5 + not",
     "-(15 + 5) / 2                                      ; 15 5 + neg 2 /",
     "15 + 5 - -(15 + 5) / 2                             ; 15 5 + 15 5 + neg 2 / -",
+    "15 == 15                                           ; 15 15 ==",
+    "15 != 15                                           ; 15 15 !=",
+    "15 < 15                                            ; 15 15 <",
+    "15 <= 15                                           ; 15 15 <=",
+    "15 > 15                                            ; 15 15 >",
+    "15 >= 15                                           ; 15 15 >=",
+    "14 < 15 == true                                    ; 14 15 < true ==",
+
 ]
 var ternary_tests = [
     'Ternary Tests                                      ; ',
