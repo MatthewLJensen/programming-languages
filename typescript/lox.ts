@@ -4,6 +4,7 @@ import * as readline from 'readline';
 import { Token } from './token';
 import { TokenType } from './tokenType';
 import { Expr } from "./Expr"
+import { Stmt } from "./Stmt"
 import { Parser } from "./parser"
 import { AstPrinter } from "./AstPrinter"
 import { RpnPrinter } from "./RpnPrinter"
@@ -69,16 +70,19 @@ function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
     const parser: Parser = new Parser(tokens)
-    const expression: Expr = parser.parse()
+    const statements: Stmt[] = parser.parse()
+    //const expression: Expr = parser.parse()
 
     // stop if there was a syntax error.
     if (hadError) return
 
     //console.log(new AstPrinter().printExpr(expression))
-    if (rpn)
-        console.log(new RpnPrinter().rpnPrintExpr(expression))
-    else
-        interpreter.interpret(expression);
+    if (rpn){
+        //console.log(new RpnPrinter().rpnPrintExpr(expression))
+    }
+    else{
+        interpreter.interpret(statements);
+    }
 }
 
 export function error(line: number, message: string) {

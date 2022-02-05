@@ -7,10 +7,11 @@ import { runtimeError } from "./lox"
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
-    interpret(expression: Expr.Expr) {
+    interpret(statements: Stmt.Stmt[]) {
         try {
-            const value: Object = this.evaluate(expression);
-            console.log(stringify(value));
+            for (let statement of statements) {
+                execute(statement);
+            }
         } catch (error) {
             runtimeError(error);
         }
@@ -81,10 +82,10 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitTernaryExpr(expr: Expr.Ternary): Object {
         const test: Object = this.evaluate(expr.expression)
 
-        if (isTruthy(test)){
+        if (isTruthy(test)) {
             const left: Object = this.evaluate(expr.left);
             return left
-        }else{
+        } else {
             const right: Object = this.evaluate(expr.right);
             return right
         }
@@ -137,7 +138,8 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitExpressionStmt(stmt: Stmt.Expression): Object {
-        throw new Error("Method not implemented.")
+        this.evaluate(stmt.expression);
+        return null; // do I need this?
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
         throw new Error("Method not implemented.")
@@ -146,7 +148,9 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitPrintStmt(stmt: Stmt.Print): Object {
-        throw new Error("Method not implemented.")
+        const value: Object = this.evaluate(stmt.expression);
+        console.log(stringify(value));
+        return null; // do I need this?
     }
     visitReturnStmt(stmt: Stmt.Return): Object {
         throw new Error("Method not implemented.")
@@ -200,4 +204,8 @@ const checkNumberOrStringOperands = (operator: Token, left: Object, right: Objec
     if ((typeof left == "number") && (typeof right == "number")) return;
     if ((typeof left == "string") && (typeof right == "string")) return;
     throw new RuntimeError(operator, "Operands must be both numbers or both strings.");
+}
+
+const execute = (stmt: Stmt.Stmt) => {
+    stmt.accept(this);
 }

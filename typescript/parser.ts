@@ -130,11 +130,9 @@ export class Parser {
 
     parse(): Stmt[] {
         let statements: Stmt[] = []
-
         while (!this.isAtEnd()) {
-            statements.push(this.declaration())
+            statements.push(this.statement())
         }
-
         return statements
     }
 
