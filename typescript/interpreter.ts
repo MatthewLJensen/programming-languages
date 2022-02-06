@@ -10,7 +10,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     interpret(statements: Stmt.Stmt[]) {
         try {
             for (let statement of statements) {
-                execute(statement);
+                this.execute(statement);
             }
         } catch (error) {
             runtimeError(error);
@@ -19,6 +19,10 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
     evaluate(expr: Expr.Expr): Object {
         return expr.accept(this);
+    }
+
+    execute(stmt: Stmt.Stmt) {
+        stmt.accept(this);
     }
 
     visitAssignExpr(expr: Expr.Assign): Object {
@@ -206,6 +210,3 @@ const checkNumberOrStringOperands = (operator: Token, left: Object, right: Objec
     throw new RuntimeError(operator, "Operands must be both numbers or both strings.");
 }
 
-const execute = (stmt: Stmt.Stmt) => {
-    stmt.accept(this);
-}

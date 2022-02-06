@@ -51,7 +51,7 @@ function runPrompt() {
     })
 
     const prompt = () => {
-        console.error("> ")
+        process.stderr.write("> ")
         rl.question('', line => {
             switch (line) {
                 case null:
@@ -72,6 +72,8 @@ function run(source: string) {
     const parser: Parser = new Parser(tokens)
     const statements: Stmt[] = parser.parse()
     //const expression: Expr = parser.parse()
+    
+
 
     // stop if there was a syntax error.
     if (hadError) return
