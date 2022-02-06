@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary, Ternary } from "./Expr"
-import { Stmt, Print, Expression } from "./Stmt"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign } from "./Expr"
+import { Stmt, Print, Expression, Var, Block } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -14,15 +14,26 @@ export class Parser {
     }
 
     private expression(): Expr {
-        return this.ternaryConditional()
+        return this.assignment()
+    }
+
+    private declaration(): Stmt {
+        try {
+            if (this.match(TokenType.VAR)) return this.varDeclaration();
+            return this.statement();
+        } catch (error) {
+            this.synchronize();
+            return null;
+        }
     }
 
     private statement(): Stmt {
         if (this.match(TokenType.PRINT)) return this.printStatement()
+        if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block())
         //if (this.match(TokenType.FOR)) return this.forStatement()
         //if (this.match(TokenType.IF)) return this.ifStatement()
         //if (this.match(TokenType.WHILE)) return this.whileStatement()
-        //if (this.match(TokenType.LEFT_BRACE)) return new Stmt.Block(this.block())
+
         return this.expressionStatement()
     }
 
@@ -32,21 +43,62 @@ export class Parser {
         return new Print(value)
     }
 
+    private varDeclaration(): Stmt {
+        const name: Token = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+        let initializer: Expr = null;
+        if (this.match(TokenType.EQUAL)) {
+            initializer = this.expression();
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+        return new Var(name, initializer);
+    }
+
     private expressionStatement(): Stmt {
         let expr: Expr = this.expression()
         this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return new Expression(expr)
     }
 
+    private block(): Stmt[] {
+        let statements: Stmt[] = []
+
+        while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+            statements.push(this.declaration());
+        }
+
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
+    }
+
+    private assignment(): Expr {
+        let expr: Expr = this.ternaryConditional()
+
+        if (this.match(TokenType.EQUAL)) {
+            const equals: Token = this.previous();
+            const value: Expr = this.assignment();
+
+            if (expr instanceof Variable) {
+                let name: Token = (expr as Variable).name;
+                return new Assign(name, value);
+            }
+
+            this.error(equals, "Invalid assignment target."); // what number should equals be?
+        }
+
+        return expr;
+    }
+
     private ternaryConditional(): Expr {
         let expr: Expr = this.equality()
 
-        if(this.match(TokenType.QUESTION)){
+        if (this.match(TokenType.QUESTION)) {
             let left: Expr = this.ternaryConditional()
-            if (this.match(TokenType.COLON)){
+            if (this.match(TokenType.COLON)) {
                 let right: Expr = this.ternaryConditional()
                 return new Ternary(expr, left, right)
-            }else{
+            } else {
                 throw this.error(this.peek(), "Expect '?' to have matching ':'.")
             }
         }
@@ -118,6 +170,10 @@ export class Parser {
             return new Literal(this.previous().literal)
         }
 
+        if (this.match(TokenType.IDENTIFIER)) {
+            return new Variable(this.previous());
+        }
+
         if (this.match(TokenType.LEFT_PAREN)) {
             const expr = this.expression()
             this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
@@ -131,7 +187,7 @@ export class Parser {
     parse(): Stmt[] {
         let statements: Stmt[] = []
         while (!this.isAtEnd()) {
-            statements.push(this.statement())
+            statements.push(this.declaration())
         }
         return statements
     }

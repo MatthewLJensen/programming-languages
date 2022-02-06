@@ -4,8 +4,11 @@ import { TokenType } from "./tokenType"
 import { Token } from "./token"
 import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./lox"
+import { Environment } from "./environment"
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
+    private environment: Environment = new Environment()
+
 
     interpret(statements: Stmt.Stmt[]) {
         try {
@@ -25,8 +28,23 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         stmt.accept(this);
     }
 
+    executeBlock(statements: Stmt.Stmt[], environment: Environment) {
+        let previous: Environment = this.environment;
+        try {
+            this.environment = environment;
+    
+            for (let statement of statements) {
+                this.execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
+    }
+
     visitAssignExpr(expr: Expr.Assign): Object {
-        throw new Error("Method not implemented.")
+        const value: Object = this.evaluate(expr.value);
+        this.environment.assign(expr.name, value);
+        return value;
     }
     visitBinaryExpr(expr: Expr.Binary): Object {
         const left: Object = this.evaluate(expr.left)
@@ -133,10 +151,11 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null;
     }
     visitVariableExpr(expr: Expr.Variable): Object {
-        throw new Error("Method not implemented.")
+        return this.environment.get(expr.name)
     }
     visitBlockStmt(stmt: Stmt.Block): Object {
-        throw new Error("Method not implemented.")
+        this.executeBlock(stmt.statements, new Environment(this.environment));
+        return null;
     }
     visitClassStmt(stmt: Stmt.Class): Object {
         throw new Error("Method not implemented.")
@@ -160,7 +179,12 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitVarStmt(stmt: Stmt.Var): Object {
-        throw new Error("Method not implemented.")
+        let value: Object = null;
+        if (stmt.initializer != null) {
+            value = this.evaluate(stmt.initializer);
+        }
+        this.environment.define(stmt.name.lexeme, value);
+        return null;
     }
     visitWhileStmt(stmt: Stmt.While): Object {
         throw new Error("Method not implemented.")
@@ -209,4 +233,5 @@ const checkNumberOrStringOperands = (operator: Token, left: Object, right: Objec
     if ((typeof left == "string") && (typeof right == "string")) return;
     throw new RuntimeError(operator, "Operands must be both numbers or both strings.");
 }
+
 
