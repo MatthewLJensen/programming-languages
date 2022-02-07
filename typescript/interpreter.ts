@@ -20,6 +20,15 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         }
     }
 
+    interpretExpression(expression: Expr.Expr) {
+        try {
+            const value: Object = this.evaluate(expression);
+            console.log(stringify(value));
+        } catch (error) {
+            runtimeError(error);
+        }
+    }
+
     evaluate(expr: Expr.Expr): Object {
         return expr.accept(this);
     }
@@ -32,7 +41,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         let previous: Environment = this.environment;
         try {
             this.environment = environment;
-    
+
             for (let statement of statements) {
                 this.execute(statement);
             }

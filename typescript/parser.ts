@@ -30,10 +30,6 @@ export class Parser {
     private statement(): Stmt {
         if (this.match(TokenType.PRINT)) return this.printStatement()
         if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block())
-        //if (this.match(TokenType.FOR)) return this.forStatement()
-        //if (this.match(TokenType.IF)) return this.ifStatement()
-        //if (this.match(TokenType.WHILE)) return this.whileStatement()
-
         return this.expressionStatement()
     }
 
@@ -192,6 +188,14 @@ export class Parser {
         return statements
     }
 
+    parseExpression(): Expr {
+        try {
+            return this.expression();
+        } catch (error) {
+            return null;
+        }
+    }
+
     private match(...types: TokenType[]): boolean {
         for (let type of types) {
             if (this.check(type)) {
@@ -225,7 +229,6 @@ export class Parser {
 
     private consume(type: TokenType, message: string): Token {
         if (this.check(type)) return this.advance()
-
         throw this.error(this.peek(), message)
     }
 

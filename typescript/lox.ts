@@ -16,6 +16,7 @@ let hadError: boolean = false
 let hadRuntimeError: boolean = false
 const args = process.argv.slice(2)
 let rpn = false
+let ast = false
 
 // check for --rpn flag. if it is present, print the RPN version of the expression.
 if (args.length > 0 && args[0] === '--rpn') {
@@ -70,19 +71,22 @@ function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
     const parser: Parser = new Parser(tokens)
-    const statements: Stmt[] = parser.parse()
-    //const expression: Expr = parser.parse()
+    const isStatement = tokens.some(element => { if (element.type == TokenType.SEMICOLON) { return true } })
     
 
-
-    // stop if there was a syntax error.
-    if (hadError) return
-
-    //console.log(new AstPrinter().printExpr(expression))
-    if (rpn){
-        //console.log(new RpnPrinter().rpnPrintExpr(expression))
-    }
-    else{
+    if (!isStatement) {
+        const expression: Expr = parser.parseExpression()
+        if (hadError) return
+        if (rpn) {
+            console.log(new RpnPrinter().rpnPrintExpr(expression))
+        } else if (ast) {
+            console.log(new AstPrinter().printExpr(expression))
+        } else {
+            interpreter.interpretExpression(expression)
+        }
+    } else {
+        const statements: Stmt[] = parser.parse()
+        if (hadError) return
         interpreter.interpret(statements);
     }
 }
