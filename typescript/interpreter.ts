@@ -134,7 +134,15 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return expr.value
     }
     visitLogicalExpr(expr: Expr.Logical): Object {
-        throw new Error("Method not implemented.")
+        const left: Object = this.evaluate(expr.left);
+
+        if (expr.operator.type == TokenType.OR) {
+          if (isTruthy(left)) return left;
+        } else {
+          if (!isTruthy(left)) return left;
+        }
+    
+        return this.evaluate(expr.right);
     }
     visitSetExpr(expr: Expr.Set): Object {
         throw new Error("Method not implemented.")
@@ -177,7 +185,12 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitIfStmt(stmt: Stmt.If): Object {
-        throw new Error("Method not implemented.")
+        if (isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.thenBranch);
+        } else if (stmt.elseBranch != null) {
+            this.execute(stmt.elseBranch);
+        }
+        return null;
     }
     visitPrintStmt(stmt: Stmt.Print): Object {
         const value: Object = this.evaluate(stmt.expression);

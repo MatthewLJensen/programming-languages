@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign } from "./Expr"
-import { Stmt, Print, Expression, Var, Block } from "./Stmt"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
+import { Stmt, Print, Expression, Var, Block, If } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -28,9 +28,49 @@ export class Parser {
     }
 
     private statement(): Stmt {
+        const expr: Expr = this.or();
+        if (this.match(TokenType.IF)) return this.ifStatement();
         if (this.match(TokenType.PRINT)) return this.printStatement()
         if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block())
         return this.expressionStatement()
+    }
+
+    private or(): Expr {
+        let expr: Expr = this.and();
+
+        while (this.match(TokenType.OR)) {
+            const operator: Token = this.previous();
+            const right: Expr = this.and();
+            expr = new Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private and(): Expr {
+        let expr: Expr = this.equality();
+
+        while (this.match(TokenType.AND)) {
+            const operator: Token = this.previous();
+            const right: Expr = this.equality();
+            expr = new Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private ifStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        const condition: Expr = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+        const thenBranch: Stmt = this.statement();
+        let elseBranch: Stmt = null;
+        if (this.match(TokenType.ELSE)) {
+            elseBranch = this.statement();
+        }
+
+        return new If(condition, thenBranch, elseBranch);
     }
 
     private printStatement(): Stmt {
