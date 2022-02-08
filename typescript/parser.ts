@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If } from "./Stmt"
+import { Stmt, Print, Expression, Var, Block, If, While } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -28,11 +28,53 @@ export class Parser {
     }
 
     private statement(): Stmt {
-        const expr: Expr = this.or();
-        if (this.match(TokenType.IF)) return this.ifStatement();
+        if (this.match(TokenType.FOR)) return this.forStatement()
+        if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
+        if (this.match(TokenType.WHILE)) return this.whileStatement()
         if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block())
         return this.expressionStatement()
+    }
+
+    // this desugarizes to a while loop
+    private forStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+        let initializer: Stmt
+        if (this.match(TokenType.SEMICOLON)) {
+            initializer = null;
+        } else if (this.match(TokenType.VAR)) {
+            initializer = this.varDeclaration();
+        } else {
+            initializer = this.expressionStatement();
+        }
+
+        let condition: Expr = null;
+        if (!this.check(TokenType.SEMICOLON)) {
+            condition = this.expression();
+        }
+        this.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+        let increment: Expr = null;
+        if (!this.check(TokenType.RIGHT_PAREN)) {
+            increment = this.expression();
+        }
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+
+        let body: Stmt = this.statement();
+
+
+        if (increment != null) {
+            body = new Block(Array.of(body, new Expression(increment)));
+        }
+
+        if (condition == null) condition = new Literal(true);
+        body = new While(condition, body);
+
+        if (initializer != null) {
+            body = new Block(Array.of(initializer, body));
+        }
+
+        return body;
     }
 
     private or(): Expr {
@@ -48,7 +90,7 @@ export class Parser {
     }
 
     private and(): Expr {
-        let expr: Expr = this.equality();
+        let expr: Expr = this.ternaryConditional()
 
         while (this.match(TokenType.AND)) {
             const operator: Token = this.previous();
@@ -91,6 +133,15 @@ export class Parser {
         return new Var(name, initializer);
     }
 
+    private whileStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        const condition: Expr = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+        const body: Stmt = this.statement();
+
+        return new While(condition, body);
+    }
+
     private expressionStatement(): Stmt {
         let expr: Expr = this.expression()
         this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
@@ -109,7 +160,7 @@ export class Parser {
     }
 
     private assignment(): Expr {
-        let expr: Expr = this.ternaryConditional()
+        let expr: Expr = this.or();
 
         if (this.match(TokenType.EQUAL)) {
             const equals: Token = this.previous();

@@ -35,36 +35,16 @@ const expressions = [
 // this was using Java namespaces. I decided to import the Expr module as Expr, so everything is referenced as Expr., including the abstract Expr, Which looks like Expr.Expr
 const statements = [
     "Block      : Stmt[] statements", // altered from book.
-    //< block-ast
-    /* Classes class-ast < Inheritance superclass-ast
-          "Class      : Token name, List<Stmt.Function> methods",
-    */
-    //> Inheritance superclass-ast
     "Class      : Token name, Expr.Variable superclass," // altered from book
     + " Function[] methods", // altered from book
-    //< Inheritance superclass-ast
     "Expression : Expr.Expr expression",
-    //> Functions function-ast
+
     "Func   : Token name, Token[] params," //altered from book. Function changed to Func
     + " Stmt[] body", // altered from book
-    //< Functions function-ast
-    //> Control Flow if-ast
     "If         : Expr.Expr condition, Stmt thenBranch,"
     + " Stmt elseBranch",
-    //< Control Flow if-ast
-    /* Statements and State stmt-ast < Statements and State
-       var-stmt-ast "Print      : Expr expression"
-    */
-    //> var-stmt-ast
     "Print      : Expr.Expr expression",
-    //< var-stmt-ast
-    //> Functions return-ast
     "Return     : Token keyword, Expr.Expr value",
-    //< Functions return-ast
-    /* Statements and State var-stmt-ast < Control Flow while-ast
-          "Var        : Token name, Expr initializer"
-    */
-    //> Control Flow while-ast
     "Var        : Token name, Expr.Expr initializer",
     "While      : Expr.Expr condition, Stmt body"
 ]
