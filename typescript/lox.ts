@@ -71,23 +71,19 @@ function run(source: string) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
     const parser: Parser = new Parser(tokens)
-    const isStatement = tokens.some(element => { if (element.type == TokenType.SEMICOLON) { return true } })
-    
+    const syntax: Object = parser.parseRepl()
+    if (hadError) return
 
-    if (!isStatement) {
-        const expression: Expr = parser.parseExpression()
-        if (hadError) return
+    if (syntax instanceof Array) {
+        interpreter.interpret(syntax);
+    } else if (syntax instanceof Expr) {
         if (rpn) {
-            console.log(new RpnPrinter().rpnPrintExpr(expression))
+            console.log(new RpnPrinter().rpnPrintExpr(syntax))
         } else if (ast) {
-            console.log(new AstPrinter().printExpr(expression))
+            console.log(new AstPrinter().printExpr(syntax))
         } else {
-            interpreter.interpretExpression(expression)
+            interpreter.interpretExpression(syntax)
         }
-    } else {
-        const statements: Stmt[] = parser.parse()
-        if (hadError) return
-        interpreter.interpret(statements);
     }
 }
 

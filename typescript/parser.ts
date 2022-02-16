@@ -8,6 +8,8 @@ class ParseError extends Error { }
 export class Parser {
     private tokens: Token[]
     private current: number = 0
+    private allowExpression: boolean
+    private foundExpression: boolean = false;
 
     constructor(tokens: Token[]) {
         this.tokens = tokens
@@ -144,8 +146,12 @@ export class Parser {
 
     private expressionStatement(): Stmt {
         let expr: Expr = this.expression()
-        this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
-        return new Expression(expr)
+        if (this.allowExpression && this.isAtEnd()) {
+            this.foundExpression = true;
+        } else {
+            this.consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        }
+        return new Expression(expr);
     }
 
     private block(): Stmt[] {
@@ -285,6 +291,23 @@ export class Parser {
         } catch (error) {
             return null;
         }
+    }
+
+    parseRepl(): Object {
+        this.allowExpression = true
+        let statements: Stmt[] = []
+        while (!this.isAtEnd()) {
+            statements.push(this.declaration());
+
+            if (this.foundExpression) {
+                let last: Stmt = statements[statements.length - 1]
+                return (last as Expression).expression;
+            }
+
+            this.allowExpression = false;
+        }
+
+        return statements;
     }
 
     private match(...types: TokenType[]): boolean {

@@ -23,7 +23,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     interpretExpression(expression: Expr.Expr) {
         try {
             const value: Object = this.evaluate(expression);
-            console.log(stringify(value));
+            console.log(stringify(value))
         } catch (error) {
             runtimeError(error);
         }
