@@ -16,6 +16,9 @@ export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
     visitBlockStmt(stmt: Stmt.Block): string {
         throw new Error("Method not implemented.");
     }
+    visitBreakStmt(stmt: Stmt.Break): string {
+        throw new Error("Method not implemented.")
+    }
     visitClassStmt(stmt: Stmt.Class): string {
         throw new Error("Method not implemented.");
     }

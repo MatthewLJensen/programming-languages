@@ -16,8 +16,8 @@ const expressions = [
 
     "Get      : Expr object, Token name",
 
-    "Grouping : Expr expression", 
-    
+    "Grouping : Expr expression",
+
     "Literal  : Object value",
 
     "Logical  : Expr left, Token operator, Expr right",
@@ -35,6 +35,7 @@ const expressions = [
 // this was using Java namespaces. I decided to import the Expr module as Expr, so everything is referenced as Expr., including the abstract Expr, Which looks like Expr.Expr
 const statements = [
     "Block      : Stmt[] statements", // altered from book.
+    "Break      : ",
     "Class      : Token name, Expr.Variable superclass," // altered from book
     + " Function[] methods", // altered from book
     "Expression : Expr.Expr expression",
@@ -54,7 +55,7 @@ function defineAST(outputDir: string, baseName: string, types: string[]) {
 
     output += dependencies.join('\n')
 
-    if (baseName == "Stmt"){
+    if (baseName == "Stmt") {
         output += '\nimport * as Expr from "./Expr"'
     }
 
@@ -93,32 +94,46 @@ function defineType(baseName: string, className: string, fieldList: string) {
 
     output += `export class ${className} extends ${baseName} {\n`
 
-    // class members
-    for (const field of fieldList.split(",")) {
-        const name = field.trim().split(" ")[1]
-        const type = field.trim().split(" ")[0]
-        output += `    public ${name.trim()}: ${type}\n`
+    // for break statement
+    if (fieldList.trim() != "") {
+
+
+        // class members
+        for (const field of fieldList.split(",")) {
+            const name = field.trim().split(" ")[1]
+            const type = field.trim().split(" ")[0]
+            output += `    public ${name.trim()}: ${type}\n`
+        }
+
     }
 
     // constructor
     output += `\n    constructor(`
-    
-    // constructor parameters
-    for (const field of fieldList.split(",")) {
-        const name = field.trim().split(" ")[1]
-        const type = field.trim().split(' ')[0]
-        output += `${name.trim()}: ${type}, `
+
+    // for break statement
+    if (fieldList.trim() != "") {
+        // constructor parameters
+        for (const field of fieldList.split(",")) {
+            const name = field.trim().split(" ")[1]
+            const type = field.trim().split(" ")[0]
+            output += `${name.trim()}: ${type}, `
+        }
+        // trim off last ", " 
+        output = output.substring(0, output.length - 1)
     }
 
-    // trim off last ", " 
-    output = output.substring(0, output.length - 1)
 
-    // assignments
     output += `    ) {\n        super()\n`
-    for (const field of fieldList.split(",")) {
-        const name = field.trim().split(" ")[1]
-        output += `        this.${name} = ${name}\n`
+
+    // for break statement
+    if (fieldList.trim() != "") {
+        // assignments
+        for (const field of fieldList.split(",")) {
+            const name = field.trim().split(" ")[1]
+            output += `        this.${name} = ${name}\n`
+        }
     }
+
     output += '    }\n\n'
 
     output += `    accept = <R>(visitor: Visitor<R>): R => {

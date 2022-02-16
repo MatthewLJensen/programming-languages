@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If, While } from "./Stmt"
+import { Stmt, Print, Expression, Var, Block, If, While, Break } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -10,6 +10,7 @@ export class Parser {
     private current: number = 0
     private allowExpression: boolean
     private foundExpression: boolean = false;
+    private loopDepth: number = 0;
 
     constructor(tokens: Token[]) {
         this.tokens = tokens
@@ -30,6 +31,7 @@ export class Parser {
     }
 
     private statement(): Stmt {
+        if (this.match(TokenType.BREAK)) return this.breakStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
         if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
@@ -62,21 +64,29 @@ export class Parser {
         }
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
 
-        let body: Stmt = this.statement();
+        try {
+            this.loopDepth++
+
+            let body: Stmt = this.statement();
 
 
-        if (increment != null) {
-            body = new Block(Array.of(body, new Expression(increment)));
+            if (increment != null) {
+                body = new Block(Array.of(body, new Expression(increment)));
+            }
+
+            if (condition == null) condition = new Literal(true);
+            body = new While(condition, body);
+
+            if (initializer != null) {
+                body = new Block(Array.of(initializer, body));
+            }
+
+            return body;
+
+        } finally {
+            this.loopDepth--
         }
 
-        if (condition == null) condition = new Literal(true);
-        body = new While(condition, body);
-
-        if (initializer != null) {
-            body = new Block(Array.of(initializer, body));
-        }
-
-        return body;
     }
 
     private or(): Expr {
@@ -139,9 +149,23 @@ export class Parser {
         this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
         const condition: Expr = this.expression();
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
-        const body: Stmt = this.statement();
 
-        return new While(condition, body);
+        try {
+            this.loopDepth++;
+            const body: Stmt = this.statement();
+            return new While(condition, body);
+        } finally {
+            this.loopDepth--
+        }
+
+    }
+
+    private breakStatement(): Stmt {
+        if (this.loopDepth == 0) {
+            this.error(this.previous(), "Must be inside a loop to use 'break'.");
+        }
+        this.consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
+        return new Break();
     }
 
     private expressionStatement(): Stmt {

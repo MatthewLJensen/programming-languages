@@ -6,6 +6,8 @@ import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./lox"
 import { Environment } from "./environment"
 
+class BreakException extends Error {}
+
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     private environment: Environment = new Environment()
 
@@ -174,6 +176,9 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         this.executeBlock(stmt.statements, new Environment(this.environment));
         return null;
     }
+    visitBreakStmt(stmt: Stmt.Break): Object {
+        throw new BreakException();
+    }
     visitClassStmt(stmt: Stmt.Class): Object {
         throw new Error("Method not implemented.")
     }
@@ -209,9 +214,15 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null;
     }
     visitWhileStmt(stmt: Stmt.While): Object {
-        while (isTruthy(this.evaluate(stmt.condition))) {
-            this.execute(stmt.body);
+        try{
+            while (isTruthy(this.evaluate(stmt.condition))) {
+                this.execute(stmt.body);
+            }
+        } catch (error) {
+            // this catches break statements
+            // do nothing
         }
+
         return null;
     }
 }
