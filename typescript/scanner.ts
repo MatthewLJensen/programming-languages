@@ -132,7 +132,7 @@ export class Scanner {
     }
 
 
-    private addToken(type: TokenType = null, literal?: any) { // using a default parameter to avoid creating a new method
+    private addToken(type: TokenType = null as any, literal?: any) { // using a default parameter to avoid creating a new method
         const text = this.source.slice(this.start, this.current)
         this.tokens.push(new Token(type, text, literal, this.line))
     }

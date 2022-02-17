@@ -23,9 +23,6 @@ export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
     visitContinueStmt(stmt: Stmt.Continue): string {
         throw new Error("Method not implemented.")
     }
-    visitDoWhileStmt(stmt: Stmt.DoWhile): string {
-        throw new Error("Method not implemented.")
-    }
     visitExitStmt(stmt: Stmt.Exit): string {
         throw new Error("Method not implemented.")
     }

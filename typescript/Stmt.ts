@@ -14,7 +14,6 @@ export interface Visitor<R> {
     visitWhileStmt(stmt: While): R
     visitBreakStmt(stmt: Break): R
     visitContinueStmt(stmt: Continue): R
-    visitDoWhileStmt(stmt: DoWhile): R
     visitExitStmt(stmt: Exit): R
     visitSwitchStmt(stmt: Switch): R
 }
@@ -177,21 +176,6 @@ export class Continue extends Stmt {
 
     accept = <R>(visitor: Visitor<R>): R => {
             return visitor.visitContinueStmt(this)
-        }
-}
-
-export class DoWhile extends Stmt {
-    public body: Stmt
-    public condition: Expr.Expr
-
-    constructor(body: Stmt, condition: Expr.Expr) {
-        super()
-        this.body = body
-        this.condition = condition
-    }
-
-    accept = <R>(visitor: Visitor<R>): R => {
-            return visitor.visitDoWhileStmt(this)
         }
 }
 

@@ -8,8 +8,8 @@ class ParseError extends Error { }
 export class Parser {
     private tokens: Token[]
     private current: number = 0
-    private allowExpression: boolean
-    private foundExpression: boolean = false;
+    private allowExpression: boolean = false
+    private foundExpression: boolean = false
     private loopDepth: number = 0;
 
     constructor(tokens: Token[]) {
@@ -23,10 +23,10 @@ export class Parser {
     private declaration(): Stmt {
         try {
             if (this.match(TokenType.VAR)) return this.varDeclaration();
-            return this.statement();
+            return this.statement()
         } catch (error) {
-            this.synchronize();
-            return null;
+            this.synchronize()
+            return null as any
         }
     }
 
@@ -46,20 +46,20 @@ export class Parser {
         this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
         let initializer: Stmt
         if (this.match(TokenType.SEMICOLON)) {
-            initializer = null;
+            initializer = null as any;
         } else if (this.match(TokenType.VAR)) {
             initializer = this.varDeclaration();
         } else {
             initializer = this.expressionStatement();
         }
 
-        let condition: Expr = null;
+        let condition: Expr = null as any;
         if (!this.check(TokenType.SEMICOLON)) {
             condition = this.expression();
         }
         this.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
 
-        let increment: Expr = null;
+        let increment: Expr = null as any;
         if (!this.check(TokenType.RIGHT_PAREN)) {
             increment = this.expression();
         }
@@ -120,7 +120,7 @@ export class Parser {
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
 
         const thenBranch: Stmt = this.statement();
-        let elseBranch: Stmt = null;
+        let elseBranch: Stmt = null as any;
         if (this.match(TokenType.ELSE)) {
             elseBranch = this.statement();
         }
@@ -137,7 +137,7 @@ export class Parser {
     private varDeclaration(): Stmt {
         const name: Token = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
 
-        let initializer: Expr = null;
+        let initializer: Expr = null as any;
         if (this.match(TokenType.EQUAL)) {
             initializer = this.expression();
         }
@@ -287,7 +287,7 @@ export class Parser {
     private primary(): Expr {
         if (this.match(TokenType.FALSE)) return new Literal(false)
         if (this.match(TokenType.TRUE)) return new Literal(true)
-        if (this.match(TokenType.NIL)) return new Literal(null)
+        if (this.match(TokenType.NIL)) return new Literal(null as any)
 
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
             return new Literal(this.previous().literal)
@@ -319,7 +319,7 @@ export class Parser {
         try {
             return this.expression();
         } catch (error) {
-            return null;
+            return null as any;
         }
     }
 
@@ -340,7 +340,7 @@ export class Parser {
         return statements;
     }
 
-    private match(...types: TokenType[]): boolean {
+    private match(...types: TokenType[]): boolean | undefined {
         for (let type of types) {
             if (this.check(type)) {
                 this.advance()

@@ -5,13 +5,13 @@ export class Environment {
     enclosing: Environment
     private values: Map<string, Object> = new Map<string, Object>()
 
-    constructor(enclosing: Environment = null) {
+    constructor(enclosing: Environment = null as any) {
         this.enclosing = enclosing
     }
 
     get(name: Token): Object {
         if (this.values.has(name.lexeme)) {
-            return this.values.get(name.lexeme);
+            return this.values.get(name.lexeme) as any // I feel like this "as any" shouldn't be necessary
         }
 
         if (this.enclosing != null) return this.enclosing.get(name)

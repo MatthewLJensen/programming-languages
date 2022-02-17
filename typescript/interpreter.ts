@@ -6,7 +6,8 @@ import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./lox"
 import { Environment } from "./environment"
 
-class BreakException extends Error {}
+class BreakException extends Error { }
+class ContinueException extends Error { }
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     private environment: Environment = new Environment()
@@ -18,7 +19,11 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
                 this.execute(statement);
             }
         } catch (error) {
-            runtimeError(error);
+            if (error instanceof RuntimeError) {
+                runtimeError(error as RuntimeError)
+            } else {
+                throw error
+            }
         }
     }
 
@@ -27,7 +32,12 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
             const value: Object = this.evaluate(expression);
             console.log(stringify(value))
         } catch (error) {
-            runtimeError(error);
+            if (error instanceof RuntimeError) {
+                runtimeError(error as RuntimeError);
+            } else {
+                throw error
+            }
+
         }
     }
 
@@ -47,6 +57,8 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
             for (let statement of statements) {
                 this.execute(statement);
             }
+        } catch (error) {
+            throw error
         } finally {
             this.environment = previous;
         }
@@ -110,7 +122,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         }
         // Unreachable.
-        return null;
+        return null as any;
     }
     visitTernaryExpr(expr: Expr.Ternary): Object {
         const test: Object = this.evaluate(expr.expression)
@@ -166,24 +178,20 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
                 return -right as number;
         }
 
-        // Unreachable.
-        return null;
+        return null as any;
     }
     visitVariableExpr(expr: Expr.Variable): Object {
         return this.environment.get(expr.name)
     }
     visitBlockStmt(stmt: Stmt.Block): Object {
-        this.executeBlock(stmt.statements, new Environment(this.environment));
-        return null;
+        this.executeBlock(stmt.statements, new Environment(this.environment))
+        return null as any;
     }
     visitBreakStmt(stmt: Stmt.Break): Object {
-        throw new BreakException();
+        throw new BreakException()
     }
     visitContinueStmt(stmt: Stmt.Continue): Object {
-        throw new Error("Method not implemented.")
-    }
-    visitDoWhileStmt(stmt: Stmt.DoWhile): Object {
-        throw new Error("Method not implemented.")
+        throw new ContinueException()
     }
     visitExitStmt(stmt: Stmt.Exit): Object {
         throw new Error("Method not implemented.")
@@ -196,7 +204,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     }
     visitExpressionStmt(stmt: Stmt.Expression): Object {
         this.evaluate(stmt.expression);
-        return null; // do I need this?
+        return null as any; // do I need this?
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
         throw new Error("Method not implemented.")
@@ -207,35 +215,46 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         } else if (stmt.elseBranch != null) {
             this.execute(stmt.elseBranch);
         }
-        return null;
+        return null as any;
     }
     visitPrintStmt(stmt: Stmt.Print): Object {
         const value: Object = this.evaluate(stmt.expression);
         console.log(stringify(value));
-        return null; // do I need this?
+        return null as any
     }
     visitReturnStmt(stmt: Stmt.Return): Object {
         throw new Error("Method not implemented.")
     }
     visitVarStmt(stmt: Stmt.Var): Object {
-        let value: Object = null;
+        let value: Object = null as any;
         if (stmt.initializer != null) {
             value = this.evaluate(stmt.initializer);
         }
         this.environment.define(stmt.name.lexeme, value);
-        return null;
+        return null as any;
     }
     visitWhileStmt(stmt: Stmt.While): Object {
-        try{
+        try {
             while (isTruthy(this.evaluate(stmt.condition))) {
-                this.execute(stmt.body);
+                try {
+                    this.execute(stmt.body);
+                } catch (error) {
+                    if (error instanceof ContinueException) {
+                        continue;
+                    } else {
+                        throw error
+                    }
+                }
             }
         } catch (error) {
-            // this catches break statements
-            // do nothing
+            if (error instanceof BreakException) {
+                // do nothing
+            } else {
+                throw error;
+            }
         }
 
-        return null;
+        return null as any
     }
 }
 

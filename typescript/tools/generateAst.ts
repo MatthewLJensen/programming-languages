@@ -38,7 +38,7 @@ const statements = [
     "Class      : Token name, Expr.Variable superclass, Function[] methods", // altered from book
     "Expression : Expr.Expr expression",
 
-    "Func       : Token name, Token[] params, Stmt[] body", //altered from book. Function changed to Func // altered from book
+    "Func       : Token name, Token[] params, Stmt[] body", //altered from book. Function changed to Func
     "If         : Expr.Expr condition, Stmt thenBranch, Stmt elseBranch",
     "Print      : Expr.Expr expression",
     "Return     : Token keyword, Expr.Expr value",
@@ -47,7 +47,6 @@ const statements = [
     // Custom Extensions
     "Break      : ",
     "Continue   : ",
-    "DoWhile    : Stmt body, Expr.Expr condition",
     "Exit       : ",
     "Switch     : Expr.Expr expression, Stmt[] cases, Stmt defaultCase",
 
