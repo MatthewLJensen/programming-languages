@@ -1,5 +1,5 @@
 import { isIndexSignatureDeclaration } from 'typescript';
-import { error } from './lox';
+import { error } from './errorHandling';
 import { TokenType } from './tokenType';
 import { Token } from './token';
 
@@ -15,7 +15,6 @@ export class Scanner {
         ['break', TokenType.BREAK],
         ['continue', TokenType.CONTINUE],
         ['class', TokenType.CLASS],
-        ['do', TokenType.DO],
         ['else', TokenType.ELSE],
         ['exit', TokenType.EXIT],
         ['false', TokenType.FALSE],

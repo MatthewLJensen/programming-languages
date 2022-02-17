@@ -3,22 +3,22 @@ import * as Stmt from "./Stmt"
 import { TokenType } from "./tokenType"
 import { Token } from "./token"
 import { RuntimeError } from "./runtimeError"
-import { runtimeError } from "./lox"
+import { runtimeError } from "./errorHandling"
 import { Environment } from "./environment"
 
 
 class ContinueException extends Error {
     constructor(message?: string) {
-      super(message); // 'Error' breaks prototype chain here
-      Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
+        super(message); // 'Error' breaks prototype chain here
+        Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
     }
-  }
+}
 class BreakException extends Error {
     constructor(message?: string) {
-      super(message); // 'Error' breaks prototype chain here
-      Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
+        super(message); // 'Error' breaks prototype chain here
+        Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
     }
-  }
+}
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     private environment: Environment = new Environment()
@@ -205,7 +205,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new ContinueException()
     }
     visitExitStmt(stmt: Stmt.Exit): Object {
-        throw new Error("Method not implemented.")
+        process.exit()
     }
     visitSwitchStmt(stmt: Stmt.Switch): Object {
         throw new Error("Method not implemented.")

@@ -1,10 +1,15 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue } from "./Stmt"
-import { tokenError } from './lox';
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit } from "./Stmt"
+import { tokenError } from "./errorHandling"
 
-class ParseError extends Error { }
+class ParseError extends Error {
+    constructor(message?: string) {
+        super(message); // 'Error' breaks prototype chain here
+        Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
+    }
+}
 export class Parser {
     private tokens: Token[]
     private current: number = 0
@@ -25,12 +30,17 @@ export class Parser {
             if (this.match(TokenType.VAR)) return this.varDeclaration();
             return this.statement()
         } catch (error) {
-            this.synchronize()
-            return null as any
+            if (error instanceof ParseError) {
+                this.synchronize()
+                return null as any
+            }else{
+                throw error
+            }
         }
     }
 
     private statement(): Stmt {
+        if (this.match(TokenType.EXIT)) return this.exitStatement()
         if (this.match(TokenType.BREAK)) return this.breakStatement()
         if (this.match(TokenType.CONTINUE)) return this.continueStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
@@ -83,7 +93,8 @@ export class Parser {
             }
 
             return body;
-
+        } catch (error) {
+            throw error
         } finally {
             this.loopDepth--
         }
@@ -155,6 +166,8 @@ export class Parser {
             this.loopDepth++;
             const body: Stmt = this.statement();
             return new While(condition, body);
+        } catch (error) {
+            throw error
         } finally {
             this.loopDepth--
         }
@@ -172,6 +185,11 @@ export class Parser {
     private continueStatement(): Stmt {
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'continue'.");
         return new Continue();
+    }
+
+    private exitStatement(): Stmt {
+        this.consume(TokenType.SEMICOLON, "Expect ';' after 'exit'.");
+        return new Exit();
     }
 
     private expressionStatement(): Stmt {
@@ -313,14 +331,6 @@ export class Parser {
             statements.push(this.declaration())
         }
         return statements
-    }
-
-    parseExpression(): Expr {
-        try {
-            return this.expression();
-        } catch (error) {
-            return null as any;
-        }
     }
 
     parseRepl(): Object {
