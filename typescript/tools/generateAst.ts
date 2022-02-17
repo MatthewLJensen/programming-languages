@@ -35,19 +35,22 @@ const expressions = [
 // this was using Java namespaces. I decided to import the Expr module as Expr, so everything is referenced as Expr., including the abstract Expr, Which looks like Expr.Expr
 const statements = [
     "Block      : Stmt[] statements", // altered from book.
-    "Break      : ",
-    "Class      : Token name, Expr.Variable superclass," // altered from book
-    + " Function[] methods", // altered from book
+    "Class      : Token name, Expr.Variable superclass, Function[] methods", // altered from book
     "Expression : Expr.Expr expression",
 
-    "Func   : Token name, Token[] params," //altered from book. Function changed to Func
-    + " Stmt[] body", // altered from book
-    "If         : Expr.Expr condition, Stmt thenBranch,"
-    + " Stmt elseBranch",
+    "Func       : Token name, Token[] params, Stmt[] body", //altered from book. Function changed to Func // altered from book
+    "If         : Expr.Expr condition, Stmt thenBranch, Stmt elseBranch",
     "Print      : Expr.Expr expression",
     "Return     : Token keyword, Expr.Expr value",
     "Var        : Token name, Expr.Expr initializer",
-    "While      : Expr.Expr condition, Stmt body"
+    "While      : Expr.Expr condition, Stmt body",
+    // Custom Extensions
+    "Break      : ",
+    "Continue   : ",
+    "DoWhile    : Stmt body, Expr.Expr condition",
+    "Exit       : ",
+    "Switch     : Expr.Expr expression, Stmt[] cases, Stmt defaultCase",
+
 ]
 
 function defineAST(outputDir: string, baseName: string, types: string[]) {
@@ -119,11 +122,11 @@ function defineType(baseName: string, className: string, fieldList: string) {
             output += `${name.trim()}: ${type}, `
         }
         // trim off last ", " 
-        output = output.substring(0, output.length - 1)
+        output = output.substring(0, output.length - 2)
     }
 
 
-    output += `    ) {\n        super()\n`
+    output += `) {\n        super()\n`
 
     // for break statement
     if (fieldList.trim() != "") {

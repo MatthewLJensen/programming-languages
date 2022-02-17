@@ -41,6 +41,7 @@ function runFile(path: string) {
     run(buffer)
     if (hadError) process.exit(65);
     if (hadRuntimeError) process.exit(70);
+    process.exit()
 }
 
 function runPrompt() {

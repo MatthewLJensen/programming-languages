@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break } from "./Stmt"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue } from "./Stmt"
 import { tokenError } from './lox';
 
 class ParseError extends Error { }
@@ -32,6 +32,7 @@ export class Parser {
 
     private statement(): Stmt {
         if (this.match(TokenType.BREAK)) return this.breakStatement()
+        if (this.match(TokenType.CONTINUE)) return this.continueStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
         if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
@@ -166,6 +167,11 @@ export class Parser {
         }
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
         return new Break();
+    }
+
+    private continueStatement(): Stmt {
+        this.consume(TokenType.SEMICOLON, "Expect ';' after 'continue'.");
+        return new Continue();
     }
 
     private expressionStatement(): Stmt {

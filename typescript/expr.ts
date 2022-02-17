@@ -25,7 +25,7 @@ export class Assign extends Expr {
     public name: Token
     public value: Expr
 
-    constructor(name: Token, value: Expr,    ) {
+    constructor(name: Token, value: Expr) {
         super()
         this.name = name
         this.value = value
@@ -41,7 +41,7 @@ export class Binary extends Expr {
     public operator: Token
     public right: Expr
 
-    constructor(left: Expr, operator: Token, right: Expr,    ) {
+    constructor(left: Expr, operator: Token, right: Expr) {
         super()
         this.left = left
         this.operator = operator
@@ -58,7 +58,7 @@ export class Ternary extends Expr {
     public left: Expr
     public right: Expr
 
-    constructor(expression: Expr, left: Expr, right: Expr,    ) {
+    constructor(expression: Expr, left: Expr, right: Expr) {
         super()
         this.expression = expression
         this.left = left
@@ -75,7 +75,7 @@ export class Call extends Expr {
     public paren: Token
     public args: Expr[]
 
-    constructor(callee: Expr, paren: Token, args: Expr[],    ) {
+    constructor(callee: Expr, paren: Token, args: Expr[]) {
         super()
         this.callee = callee
         this.paren = paren
@@ -91,7 +91,7 @@ export class Get extends Expr {
     public object: Expr
     public name: Token
 
-    constructor(object: Expr, name: Token,    ) {
+    constructor(object: Expr, name: Token) {
         super()
         this.object = object
         this.name = name
@@ -105,7 +105,7 @@ export class Get extends Expr {
 export class Grouping extends Expr {
     public expression: Expr
 
-    constructor(expression: Expr,    ) {
+    constructor(expression: Expr) {
         super()
         this.expression = expression
     }
@@ -118,7 +118,7 @@ export class Grouping extends Expr {
 export class Literal extends Expr {
     public value: Object
 
-    constructor(value: Object,    ) {
+    constructor(value: Object) {
         super()
         this.value = value
     }
@@ -133,7 +133,7 @@ export class Logical extends Expr {
     public operator: Token
     public right: Expr
 
-    constructor(left: Expr, operator: Token, right: Expr,    ) {
+    constructor(left: Expr, operator: Token, right: Expr) {
         super()
         this.left = left
         this.operator = operator
@@ -150,7 +150,7 @@ export class Set extends Expr {
     public name: Token
     public value: Expr
 
-    constructor(object: Expr, name: Token, value: Expr,    ) {
+    constructor(object: Expr, name: Token, value: Expr) {
         super()
         this.object = object
         this.name = name
@@ -166,7 +166,7 @@ export class Super extends Expr {
     public keyword: Token
     public method: Token
 
-    constructor(keyword: Token, method: Token,    ) {
+    constructor(keyword: Token, method: Token) {
         super()
         this.keyword = keyword
         this.method = method
@@ -180,7 +180,7 @@ export class Super extends Expr {
 export class This extends Expr {
     public keyword: Token
 
-    constructor(keyword: Token,    ) {
+    constructor(keyword: Token) {
         super()
         this.keyword = keyword
     }
@@ -194,7 +194,7 @@ export class Unary extends Expr {
     public operator: Token
     public right: Expr
 
-    constructor(operator: Token, right: Expr,    ) {
+    constructor(operator: Token, right: Expr) {
         super()
         this.operator = operator
         this.right = right
@@ -208,7 +208,7 @@ export class Unary extends Expr {
 export class Variable extends Expr {
     public name: Token
 
-    constructor(name: Token,    ) {
+    constructor(name: Token) {
         super()
         this.name = name
     }

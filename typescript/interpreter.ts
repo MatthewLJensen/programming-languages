@@ -179,6 +179,18 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitBreakStmt(stmt: Stmt.Break): Object {
         throw new BreakException();
     }
+    visitContinueStmt(stmt: Stmt.Continue): Object {
+        throw new Error("Method not implemented.")
+    }
+    visitDoWhileStmt(stmt: Stmt.DoWhile): Object {
+        throw new Error("Method not implemented.")
+    }
+    visitExitStmt(stmt: Stmt.Exit): Object {
+        throw new Error("Method not implemented.")
+    }
+    visitSwitchStmt(stmt: Stmt.Switch): Object {
+        throw new Error("Method not implemented.")
+    }
     visitClassStmt(stmt: Stmt.Class): Object {
         throw new Error("Method not implemented.")
     }

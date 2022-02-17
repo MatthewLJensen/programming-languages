@@ -4,6 +4,7 @@ import { Token } from "./token"
 import { TokenType } from "./tokenType"
 
 export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
+
     printExpr(expr: Expr.Expr): string {
         return expr.accept(this)
     }
@@ -17,6 +18,18 @@ export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
         throw new Error("Method not implemented.");
     }
     visitBreakStmt(stmt: Stmt.Break): string {
+        throw new Error("Method not implemented.")
+    }
+    visitContinueStmt(stmt: Stmt.Continue): string {
+        throw new Error("Method not implemented.")
+    }
+    visitDoWhileStmt(stmt: Stmt.DoWhile): string {
+        throw new Error("Method not implemented.")
+    }
+    visitExitStmt(stmt: Stmt.Exit): string {
+        throw new Error("Method not implemented.")
+    }
+    visitSwitchStmt(stmt: Stmt.Switch): string {
         throw new Error("Method not implemented.")
     }
     visitClassStmt(stmt: Stmt.Class): string {
