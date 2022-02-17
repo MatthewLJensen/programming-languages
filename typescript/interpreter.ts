@@ -6,8 +6,19 @@ import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./lox"
 import { Environment } from "./environment"
 
-class BreakException extends Error { }
-class ContinueException extends Error { }
+
+class ContinueException extends Error {
+    constructor(message?: string) {
+      super(message); // 'Error' breaks prototype chain here
+      Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
+    }
+  }
+class BreakException extends Error {
+    constructor(message?: string) {
+      super(message); // 'Error' breaks prototype chain here
+      Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
+    }
+  }
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     private environment: Environment = new Environment()
