@@ -39,11 +39,14 @@ export class Parser {
         }
     }
 
+
+
     private statement(): Stmt {
         if (this.match(TokenType.EXIT)) return this.exitStatement()
         if (this.match(TokenType.BREAK)) return this.breakStatement()
         if (this.match(TokenType.CONTINUE)) return this.continueStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
+        if (this.match(TokenType.SWITCH)) return this.switchStatement()
         if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
         if (this.match(TokenType.WHILE)) return this.whileStatement()
@@ -137,28 +140,13 @@ export class Parser {
             this.loopDepth++
 
             let body: Stmt = this.statement();
-            
+
 
             if (condition == null)
                 condition = new Literal(true);
 
             // the weird ternary is to send null to the incrementer if it's not there
             body = new For(condition, body, (increment) ? new Expression(increment) : increment, initializer);
-
-
-
-            // if (increment != null) {
-            //     body = new Block(Array.of(body, new Expression(increment)));
-            // }
-
-            // if (condition == null)
-            //     condition = new Literal(true);
-
-            // body = new While(condition, body);
-
-            // if (initializer != null) {
-            //     body = new Block(Array.of(initializer, body));
-            // }
 
             return body;
         } catch (error) {
@@ -197,6 +185,47 @@ export class Parser {
     private continueStatement(): Stmt {
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'continue'.");
         return new Continue();
+    }
+
+    private switchStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'switch'.");
+        const expression: Expr = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch condition.");
+
+        const cases: Stmt[] = [];
+        this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch condition.");
+        while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+            cases.push(this.switchCase());
+
+            
+        }
+        return new Switch(expression,)
+    }
+
+    private switchCase(): Stmt {
+
+
+            if (this.match(TokenType.CASE)) {
+                const condition: Expr = this.expression();
+                this.consume(TokenType.COLON, "Expect ':' after case condition.");
+            }
+            if (this.match(TokenType.DEFAULT)) {
+                this.consume(TokenType.COLON, "Expect ':' after 'default'.");
+
+            return new If(condition, thenBranch, elseBranch);
+
+            this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+            const condition: Expr = this.expression();
+            this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+    
+            const thenBranch: Stmt = this.statement();
+            let elseBranch: Stmt = null as any;
+            if (this.match(TokenType.ELSE)) {
+                elseBranch = this.statement();
+            }
+    
+            
+
     }
 
     private exitStatement(): Stmt {

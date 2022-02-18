@@ -13,8 +13,10 @@ export class Scanner {
     private keywords = new Map<String, TokenType>([
         ['and', TokenType.AND],
         ['break', TokenType.BREAK],
+        ['case', TokenType.CASE],
         ['continue', TokenType.CONTINUE],
         ['class', TokenType.CLASS],
+        ['default', TokenType.DEFAULT],
         ['else', TokenType.ELSE],
         ['exit', TokenType.EXIT],
         ['false', TokenType.FALSE],
