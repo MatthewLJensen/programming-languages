@@ -45,6 +45,7 @@ const statements = [
     "Var        : Token name, Expr.Expr initializer",
     "While      : Expr.Expr condition, Stmt body",
     // Custom Extensions
+    "For        : Expr.Expr condition, Stmt body, Stmt increment, Stmt initializer",
     "Break      : ",
     "Continue   : ",
     "Exit       : ",

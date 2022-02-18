@@ -74,8 +74,8 @@ function run(source: string, fromRepl: boolean = false) {
     const scanner: Scanner = new Scanner(source)
     const tokens: Token[] = scanner.scanTokens()
     const parser: Parser = new Parser(tokens)
-    //const syntax: Object = fromRepl ? parser.parseRepl() : parser.parse()
-    const syntax: Object = parser.parseRepl()
+    const syntax: Object = fromRepl ? parser.parseRepl() : parser.parse()
+
     if (getHadError()) return
 
     if (syntax instanceof Array) {

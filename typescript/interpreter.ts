@@ -267,6 +267,35 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         return null as any
     }
+    visitForStmt(stmt: Stmt.For): Object {
+        try {
+            if (stmt.initializer != null) {
+                this.execute(stmt.initializer)
+            }
+            while (isTruthy(this.evaluate(stmt.condition))) {
+                try {
+                    this.execute(stmt.body);
+                } catch (error) {
+                    if (error instanceof ContinueException) {
+                        this.execute(stmt.increment);
+                        continue;
+                    } else {
+                        throw error
+                    }
+                }
+                if (stmt.increment != null) {
+                    this.execute(stmt.increment);
+                }
+            }
+        }catch (error){
+            if (error instanceof BreakException) {
+                // do nothing
+            } else {
+                throw error;
+            }
+        }
+        return null as any
+    }
 }
 
 const isTruthy = (object: Object): boolean => {

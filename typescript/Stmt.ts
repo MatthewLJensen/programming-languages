@@ -12,6 +12,7 @@ export interface Visitor<R> {
     visitReturnStmt(stmt: Return): R
     visitVarStmt(stmt: Var): R
     visitWhileStmt(stmt: While): R
+    visitForStmt(stmt: For): R
     visitBreakStmt(stmt: Break): R
     visitContinueStmt(stmt: Continue): R
     visitExitStmt(stmt: Exit): R
@@ -154,6 +155,25 @@ export class While extends Stmt {
 
     accept = <R>(visitor: Visitor<R>): R => {
             return visitor.visitWhileStmt(this)
+        }
+}
+
+export class For extends Stmt {
+    public condition: Expr.Expr
+    public body: Stmt
+    public increment: Stmt
+    public initializer: Stmt
+
+    constructor(condition: Expr.Expr, body: Stmt, increment: Stmt, initializer: Stmt) {
+        super()
+        this.condition = condition
+        this.body = body
+        this.increment = increment
+        this.initializer = initializer
+    }
+
+    accept = <R>(visitor: Visitor<R>): R => {
+            return visitor.visitForStmt(this)
         }
 }
 

@@ -5,6 +5,7 @@ import { TokenType } from "./tokenType"
 
 export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
 
+
     printExpr(expr: Expr.Expr): string {
         return expr.accept(this)
     }
@@ -53,7 +54,9 @@ export class AstPrinter implements Expr.Visitor<string>, Stmt.Visitor<string> {
     visitWhileStmt(stmt: Stmt.While): string {
         throw new Error("Method not implemented.");
     }
-
+    visitForStmt(stmt: Stmt.For): string {
+        throw new Error("Method not implemented.")
+    }
 
     // Expression Visits
     visitAssignExpr(expr: Expr.Assign): string {
