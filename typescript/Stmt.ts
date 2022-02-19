@@ -212,10 +212,10 @@ export class Exit extends Stmt {
 
 export class Switch extends Stmt {
     public expression: Expr.Expr
-    public cases: Stmt[]
+    public cases: Stmt[][]
     public defaultCase: Stmt
 
-    constructor(expression: Expr.Expr, cases: Stmt[], defaultCase: Stmt) {
+    constructor(expression: Expr.Expr, cases: Stmt[][], defaultCase: Stmt) {
         super()
         this.expression = expression
         this.cases = cases

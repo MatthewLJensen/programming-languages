@@ -192,17 +192,17 @@ export class Parser {
         const expression: Expr = this.expression();
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch condition.");
 
-        const cases: Stmt[] = [];
+        let cases: Stmt[][];
         this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch condition.");
         while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
-            cases.push(this.switchCase());
+            cases.push(this.switchCase(expression));
 
             
         }
-        return new Switch(expression,)
+        return new Switch(expression, cases)
     }
 
-    private switchCase(): Stmt {
+    private switchCase(expression: Expr): Stmt[] {
 
 
             if (this.match(TokenType.CASE)) {
