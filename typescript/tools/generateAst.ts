@@ -49,7 +49,7 @@ const statements = [
     "Break      : ",
     "Continue   : ",
     "Exit       : ",
-    "Switch     : Expr.Expr expression, Stmt[][] cases, Stmt defaultCase",
+    "Switch     : Expr.Expr expression, Array<(Stmt|Expr.Expr)>[] cases, Stmt defaultCase",
 
 ]
 

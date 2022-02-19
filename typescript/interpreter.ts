@@ -208,7 +208,18 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         process.exit()
     }
     visitSwitchStmt(stmt: Stmt.Switch): Object {
-        throw new Error("Method not implemented.")
+        let executed: boolean = false;
+        for (let caseStmt of stmt.cases) {
+            if (isEqual(this.evaluate(caseStmt[0] as Expr.Expr), this.evaluate(stmt.expression))) {
+                executed = true
+                this.execute(caseStmt[1] as Stmt.Stmt)
+                break
+            }
+        }
+        if (!executed && stmt.defaultCase) {
+            this.execute(stmt.defaultCase)
+        }
+        return null as any;
     }
     visitClassStmt(stmt: Stmt.Class): Object {
         throw new Error("Method not implemented.")

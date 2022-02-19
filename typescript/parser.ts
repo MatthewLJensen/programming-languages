@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For } from "./Stmt"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch } from "./Stmt"
 import { tokenError } from "./errorHandling"
 
 class ParseError extends Error {
@@ -192,39 +192,51 @@ export class Parser {
         const expression: Expr = this.expression();
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch condition.");
 
-        let cases: Stmt[][];
+        let cases: Array<(Expr | Stmt)[]> = []
+        let defaultCase: Stmt = null as any;
         this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch condition.");
-        while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
-            cases.push(this.switchCase(expression));
-
-            
+        while (!this.check(TokenType.DEFAULT) && !this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+            cases.push(this.Case());
         }
-        return new Switch(expression, cases)
+        if (this.match(TokenType.DEFAULT)) {
+            defaultCase = this.Default()
+        }
+        return new Switch(expression, cases, defaultCase)
     }
 
-    private switchCase(expression: Expr): Stmt[] {
-
-
-            if (this.match(TokenType.CASE)) {
-                const condition: Expr = this.expression();
-                this.consume(TokenType.COLON, "Expect ':' after case condition.");
-            }
-            if (this.match(TokenType.DEFAULT)) {
-                this.consume(TokenType.COLON, "Expect ':' after 'default'.");
-
-            return new If(condition, thenBranch, elseBranch);
-
-            this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+    private Case(): Array<(Expr | Stmt)> {
+        if (this.match(TokenType.CASE)) {
             const condition: Expr = this.expression();
-            this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
-    
-            const thenBranch: Stmt = this.statement();
-            let elseBranch: Stmt = null as any;
-            if (this.match(TokenType.ELSE)) {
-                elseBranch = this.statement();
-            }
-    
-            
+            this.consume(TokenType.COLON, "Expect ':' after case condition.");
+            const body: Stmt = this.statement();
+            return [condition, body];
+        } else {
+            this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
+            return null as any;
+        }
+    }
+
+    private Default(): Stmt {
+        if (this.match(TokenType.DEFAULT)) {
+            this.consume(TokenType.COLON, "Expect ':' after 'default'.");
+            const body: Stmt = this.statement();
+            return body;
+        } else {
+            this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
+            return null as any;
+        }
+
+        // return new If(condition, thenBranch, elseBranch);
+
+        // this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        // const condition: Expr = this.expression();
+        // this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+        // const thenBranch: Stmt = this.statement();
+        // let elseBranch: Stmt = null as any;
+        // if (this.match(TokenType.ELSE)) {
+        //     elseBranch = this.statement();
+        // }
 
     }
 

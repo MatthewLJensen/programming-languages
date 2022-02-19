@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon --config nodemon.json lox.ts",
-    "dev:debug": "nodemon --config nodemon.json --inspect-brk lox.ts scripts/for.lox"
+    "dev:debug": "nodemon --config nodemon.json --inspect-brk lox.ts scripts/switchCase.lox"
   },
   "devDependencies": {
     "@types/node": "^17.0.8",
