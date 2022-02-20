@@ -47,6 +47,8 @@ export class Parser {
         if (this.match(TokenType.CONTINUE)) return this.continueStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
         if (this.match(TokenType.SWITCH)) return this.switchStatement()
+        // if (this.match(TokenType.CASE)) return this.caseStatement()
+        // if (this.match(TokenType.DEFAULT)) return this.defaultStatement()
         if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
         if (this.match(TokenType.WHILE)) return this.whileStatement()
@@ -192,15 +194,18 @@ export class Parser {
         const expression: Expr = this.expression();
         this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch condition.");
 
-        let cases: Array<(Expr | Stmt)[]> = []
+        let cases: Array<(Stmt | Expr)>[] = [];
         let defaultCase: Stmt = null as any;
+
+        //let body = this.statement();
         this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch condition.");
-        while (!this.check(TokenType.DEFAULT) && !this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+        while (!this.check(TokenType.RIGHT_BRACE) && !this.check(TokenType.DEFAULT) && !this.isAtEnd()) {
             cases.push(this.Case());
         }
         if (this.match(TokenType.DEFAULT)) {
             defaultCase = this.Default()
         }
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after switch cases.");
         return new Switch(expression, cases, defaultCase)
     }
 
@@ -225,19 +230,6 @@ export class Parser {
             this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
             return null as any;
         }
-
-        // return new If(condition, thenBranch, elseBranch);
-
-        // this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
-        // const condition: Expr = this.expression();
-        // this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
-
-        // const thenBranch: Stmt = this.statement();
-        // let elseBranch: Stmt = null as any;
-        // if (this.match(TokenType.ELSE)) {
-        //     elseBranch = this.statement();
-        // }
-
     }
 
     private exitStatement(): Stmt {

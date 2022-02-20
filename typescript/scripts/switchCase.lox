@@ -1,4 +1,4 @@
-switch (15) {
+switch ("dog") {
     case "dog":
         print("dog");
     case 15:
