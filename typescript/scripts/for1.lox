@@ -1,0 +1,5 @@
+//testing potential for loop problem
+ 
+for (var i = 1; i < 10; i = i + 1) {
+    print i;
+}

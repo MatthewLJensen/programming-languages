@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import { readFileSync } from 'fs';
 // Testing that expressions are parsed and interpreted correctly.
 var general_tests = [
     'General tests                                      ; ',
@@ -35,7 +36,7 @@ var rpn_tests = [
     "14.7 + 15.3 * 2                                    ; 14.7 15.3 2 * +",
     "14.7 + 15.3 * 2 + 3.5                              ; 14.7 15.3 2 * + 3.5 +",
     "125.32 / 2.5                                       ; 125.32 2.5 /",
-    "125.37 - 125.32 / 2.5                              ; 125.37 125.32 2.5 / -",    
+    "125.37 - 125.32 / 2.5                              ; 125.37 125.32 2.5 / -",
     "14 < 15 == true                                    ; 14 15 < true ==",
     "\"cow\" < \"kitten\"                               ; cow kitten <",
     "\"cow\" <= \"kitten\"                              ; cow kitten <=",
@@ -61,8 +62,8 @@ var ternary_tests = [
     '\"\" ? 1 : 2 + 3                                   ; 1',
     'nil ? 1 : 2 + 3                                    ; 5',
     'nil ? nil ? 1 : 2 + 3 : 4                          ; 4',
-    'true ? 15                                          ; [line 1] Error at end: Expect \'?\' to have matching \':\'.', 
-    '\"cat\" ? 15.75 : \"dog\"                          ; 15.75',                             
+    'true ? 15                                          ; [line 1] Error at end: Expect \'?\' to have matching \':\'.',
+    '\"cat\" ? 15.75 : \"dog\"                          ; 15.75',
 ]
 var string_comparison_tests = [
     'String Comparison Tests                            ; ',
@@ -137,11 +138,41 @@ const runTests = async (arg, testArray) => {
     })
 }
 
+const runFileTests = async (runFilePath, testFilePath) => {
+    return new Promise((resolve, reject) => {
+
+        let interpreter = child_process.spawn('../tlox', [runFilePath]);
+        fileStream = fs.createWriteStream('result.txt')
+        interpreter.stdout.pipe(fileStream);
+
+
+        let passed = 0
+        let failed = 0
+
+        let output = readFileSync(runFilePath)
+        let expected = readFileSync(testFilePath)
+
+        if (output.equals(expected)) {
+            console.log('\x1b[32m%s\x1b[0m', 'PASS\n')
+            passed++
+        } else {
+            console.log('\x1b[31m%s\x1b[0m', 'FAIL')
+            console.log('\x1b[31m%s\x1b[0m', 'Expected: ' + expected)
+            console.log('\x1b[31m%s\x1b[0m', 'Actual: ' + output + '\n')
+            failed++
+        }
+
+        interpreter.kill()
+        resolve([passed, failed])
+    })
+}
+
 const main = async () => {
     let to_run = [general_tests, rpn_tests, ternary_tests, string_comparison_tests]
     let passed = 0
     let failed = 0
 
+    // Expression Tests
     for (let i = 0; i < to_run.length; i++) {
         let testArray = to_run[i]
         let name = testArray[0].split(';')[0].trim()
@@ -155,6 +186,23 @@ const main = async () => {
         })
     }
 
+    // File Tests
+    // pull in an array of files to test
+    let files = fs.readdirSync('../scripts')
+    for (let file of files) {
+        let runFilePath = '../scripts/' + file
+        let testFilePath = '../scripts/expected/' + file.replace('.lox', '')
+        console.log(`Running ${file}`)
+        await runFileTests(runFilePath, testFilePath).then((results) => {
+            passed += results[0]
+            failed += results[1]
+            console.log('\x1b[32m%s\x1b[0m', `${file} passed: ` + results[0])
+            console.log('\x1b[31m%s\x1b[0m', `${file} failed: ` + results[1])
+        })
+
+    }
+
+
     console.log('\n\n')
     console.log('\x1b[32m%s\x1b[0m', 'Total passed: ' + passed)
     console.log('\x1b[31m%s\x1b[0m', 'Total failed: ' + failed)
@@ -165,5 +213,6 @@ const main = async () => {
 
     process.exit(0)
 }
+
 
 main()
