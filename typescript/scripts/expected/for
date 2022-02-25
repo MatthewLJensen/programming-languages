@@ -1,53 +1,65 @@
-//testing all various configurations of a for loop
-
-// simple normal for loop
-for (var i = 0; i < 10; i = i + 1) {
-    print i;
-}
-
-print "---------";
-
-// for loop with no incrementor
-for (var i = 0; i < 10; ) {
-    print i;
-    i = i + 1;
-}
-
-print "---------";
-
-// for loop with no initializer
-var i = 0;
-for (; i < 10; i = i + 1) {
-    print i;
-}
-
-print "---------";
-
-// for loop with no incrementor and no initializer
-var i = 0;
-for (; i < 10; ) {
-    print i;
-    i = i + 1;
-}
-
-print "---------";
-
-// for loop with no condition
-for (var i = 0; ; i = i + 1) {
-    print i;
-    if (i >= 10) {
-        break;
-    }
-}
-
-print "---------";
-
-// for loop with continue. Should still increment. Should skip 5
-
-for (var i = 0; i < 10; i = i + 1) {
-    if (i == 5) {
-        continue;
-    }
-    print i;
-}
-
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+---------
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+---------
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+---------
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+---------
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+---------
+0
+1
+2
+3
+4
+6
+7
+8
+9

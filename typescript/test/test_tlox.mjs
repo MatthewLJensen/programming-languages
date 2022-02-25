@@ -1,5 +1,5 @@
 import * as child_process from 'child_process';
-import { readFileSync } from 'fs';
+import * as fs from 'fs';
 // Testing that expressions are parsed and interpreted correctly.
 var general_tests = [
     'General tests                                      ; ',
@@ -142,28 +142,31 @@ const runFileTests = async (runFilePath, testFilePath) => {
     return new Promise((resolve, reject) => {
 
         let interpreter = child_process.spawn('../tlox', [runFilePath]);
-        fileStream = fs.createWriteStream('result.txt')
+        let fileStream = fs.createWriteStream('result.txt')
         interpreter.stdout.pipe(fileStream);
 
 
         let passed = 0
         let failed = 0
 
-        let output = readFileSync(runFilePath)
-        let expected = readFileSync(testFilePath)
+        interpreter.on('exit', function () {
+            let output = fs.readFileSync(runFilePath)
+            let expected = fs.readFileSync("./result.txt")
 
-        if (output.equals(expected)) {
-            console.log('\x1b[32m%s\x1b[0m', 'PASS\n')
-            passed++
-        } else {
-            console.log('\x1b[31m%s\x1b[0m', 'FAIL')
-            console.log('\x1b[31m%s\x1b[0m', 'Expected: ' + expected)
-            console.log('\x1b[31m%s\x1b[0m', 'Actual: ' + output + '\n')
-            failed++
-        }
+            if (output.equals(expected)) {
+                console.log('\x1b[32m%s\x1b[0m', 'PASS\n')
+                passed++
+            } else {
+                console.log('\x1b[31m%s\x1b[0m', 'FAIL')
+                console.log('\x1b[31m%s\x1b[0m', 'Expected: ' + expected)
+                console.log('\x1b[31m%s\x1b[0m', 'Actual: ' + output + '\n')
+                failed++
+            }
 
-        interpreter.kill()
-        resolve([passed, failed])
+            interpreter.kill()
+            resolve([passed, failed])
+        })
+
     })
 }
 
@@ -173,18 +176,18 @@ const main = async () => {
     let failed = 0
 
     // Expression Tests
-    for (let i = 0; i < to_run.length; i++) {
-        let testArray = to_run[i]
-        let name = testArray[0].split(';')[0].trim()
-        let arg = testArray[0].split(';')[1].trim()
-        console.log(`Running ${name}`)
-        await runTests(arg, testArray).then((results) => {
-            passed += results[0]
-            failed += results[1]
-            console.log('\x1b[32m%s\x1b[0m', `${name} passed: ` + results[0])
-            console.log('\x1b[31m%s\x1b[0m', `${name} failed: ` + results[1])
-        })
-    }
+    // for (let i = 0; i < to_run.length; i++) {
+    //     let testArray = to_run[i]
+    //     let name = testArray[0].split(';')[0].trim()
+    //     let arg = testArray[0].split(';')[1].trim()
+    //     console.log(`Running ${name}`)
+    //     await runTests(arg, testArray).then((results) => {
+    //         passed += results[0]
+    //         failed += results[1]
+    //         console.log('\x1b[32m%s\x1b[0m', `${name} passed: ` + results[0])
+    //         console.log('\x1b[31m%s\x1b[0m', `${name} failed: ` + results[1])
+    //     })
+    // }
 
     // File Tests
     // pull in an array of files to test
