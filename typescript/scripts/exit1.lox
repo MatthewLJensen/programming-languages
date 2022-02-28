@@ -1,5 +1,4 @@
 // Tests if exit works inside of a nested for loop, while loop, and if statement
-
 for (var i = 0; i < 10; i = i + 1) {
   print i;
   if (i == 5) {
