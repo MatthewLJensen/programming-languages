@@ -198,14 +198,23 @@ export class Parser {
         let defaultCase: Stmt = null as any;
 
         //let body = this.statement();
-        this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch condition.");
+        this.consume(TokenType.LEFT_BRACE, "Expect '{' after switch and target.");
         while (!this.check(TokenType.RIGHT_BRACE) && !this.check(TokenType.DEFAULT) && !this.isAtEnd()) {
             cases.push(this.Case());
         }
         if (this.check(TokenType.DEFAULT)) {
             defaultCase = this.Default()
         }
-        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after switch cases.");
+
+        // To match Prof. O's required errors
+        if (this.check(TokenType.DEFAULT)) {
+            throw this.error(this.peek(), "Only 1 default branch allowed.")
+        }
+        if (this.check(TokenType.CASE)) {
+            throw this.error(this.peek(), "'default' must be the last branch.")
+        }
+
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after all cases.");
         return new Switch(expression, cases, defaultCase)
     }
 
@@ -216,7 +225,7 @@ export class Parser {
             const body: Stmt = this.statement();
             return [condition, body];
         } else {
-            this.error(this.peek(), "Expect 'case' after 'switch'.");
+            throw this.error(this.peek(), "Every branch of switch must begin with 'case' or 'default'.");
             return null as any;
         }
     }
@@ -227,7 +236,7 @@ export class Parser {
             const body: Stmt = this.statement();
             return body;
         } else {
-            this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
+            throw this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
             return null as any;
         }
     }
@@ -440,7 +449,7 @@ export class Parser {
         this.advance()
 
         while (!this.isAtEnd()) {
-            if (this.previous().type == TokenType.SEMICOLON) return
+            if (this.previous().type == TokenType.SEMICOLON) return // this is returning early because it sees a semicolon, so it returns and is met with a closing bracket.
 
             switch (this.peek().type) {
                 case TokenType.CLASS:
@@ -451,6 +460,8 @@ export class Parser {
                 case TokenType.WHILE:
                 case TokenType.PRINT:
                 case TokenType.RETURN:
+                case TokenType.SWITCH:
+                    //case TokenType.DEFAULT: // hopefully this doesn't break anything
                     return
             }
             this.advance()

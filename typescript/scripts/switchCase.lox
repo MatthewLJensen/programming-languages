@@ -1,11 +1,36 @@
-// switch (3) { }
-switch ("dogs") {
-    case "dog":
-        print("dog");
-    case 15:
-        print(15);
-    case "bird":
-        print("bird");
-    default:
-        print("default");
+switch 5;
+switch (5;
+switch (5);
+switch (5) {
+    default print "hello";
 }
+switch (5) {
+    default: print "hello";
+    default: "oops";
+}
+switch (5) {
+    case print "hello";
+}
+switch (5) {
+    case 5 print "hello";
+}
+switch (5) {
+    case 5: print "hello";
+    default: print "oops";
+    case 5: print "hello";
+}
+switch (5) {
+    print "hello";
+}
+switch (5) {
+// // switch (3) { }
+// switch ("dogs") {
+//     case "dog":
+//         print("dog");
+//     case 15:
+//         print(15);
+//     case "bird":
+//         print("bird");
+//     default:
+//         print("default");
+// }
