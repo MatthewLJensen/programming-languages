@@ -178,7 +178,7 @@ export class Parser {
 
     private breakStatement(): Stmt {
         if (this.loopDepth == 0) {
-            this.error(this.previous(), "Must be inside a loop to use 'break'.");
+            this.error(this.previous(), "break is only allowed in a loop.");
         }
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
         return new Break();
@@ -202,7 +202,7 @@ export class Parser {
         while (!this.check(TokenType.RIGHT_BRACE) && !this.check(TokenType.DEFAULT) && !this.isAtEnd()) {
             cases.push(this.Case());
         }
-        if (this.match(TokenType.DEFAULT)) {
+        if (this.check(TokenType.DEFAULT)) {
             defaultCase = this.Default()
         }
         this.consume(TokenType.RIGHT_BRACE, "Expect '}' after switch cases.");
@@ -216,7 +216,7 @@ export class Parser {
             const body: Stmt = this.statement();
             return [condition, body];
         } else {
-            this.error(this.peek(), "Expect 'case' or 'default' after 'switch'.");
+            this.error(this.peek(), "Expect 'case' after 'switch'.");
             return null as any;
         }
     }
