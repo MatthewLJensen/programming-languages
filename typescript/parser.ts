@@ -178,13 +178,16 @@ export class Parser {
 
     private breakStatement(): Stmt {
         if (this.loopDepth == 0) {
-            this.error(this.previous(), "break is only allowed in a loop.");
+            this.error(this.previous(), "'break' is only allowed in a loop.");
         }
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
         return new Break();
     }
 
     private continueStatement(): Stmt {
+        if (this.loopDepth == 0) {
+            this.error(this.previous(), "'continue' is only allowed in a loop.");
+        }
         this.consume(TokenType.SEMICOLON, "Expect ';' after 'continue'.");
         return new Continue();
     }
