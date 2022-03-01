@@ -23,14 +23,3 @@ switch (5) {
     print "hello";
 }
 switch (5) {
-// // switch (3) { }
-// switch ("dogs") {
-//     case "dog":
-//         print("dog");
-//     case 15:
-//         print(15);
-//     case "bird":
-//         print("bird");
-//     default:
-//         print("default");
-// }

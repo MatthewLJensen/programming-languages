@@ -195,7 +195,7 @@ export class Parser {
     private switchStatement(): Stmt {
         this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'switch'.");
         const expression: Expr = this.expression();
-        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch condition.");
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after switch target.");
 
         let cases: Array<(Stmt | Expr)>[] = [];
         let defaultCase: Stmt = null as any;
@@ -211,10 +211,12 @@ export class Parser {
 
         // To match Prof. O's required errors
         if (this.check(TokenType.DEFAULT)) {
-            throw this.error(this.peek(), "Only 1 default branch allowed.")
+            this.error(this.peek(), "Only 1 default branch allowed.")
+            this.Default()
         }
         if (this.check(TokenType.CASE)) {
-            throw this.error(this.peek(), "'default' must be the last branch.")
+            this.error(this.peek(), "'default' must be the last branch.")
+            this.Case()
         }
 
         this.consume(TokenType.RIGHT_BRACE, "Expect '}' after all cases.");
@@ -224,11 +226,12 @@ export class Parser {
     private Case(): Array<(Expr | Stmt)> {
         if (this.match(TokenType.CASE)) {
             const condition: Expr = this.expression();
-            this.consume(TokenType.COLON, "Expect ':' after case condition.");
+            this.consume(TokenType.COLON, "Expect ':' after case expression.");
             const body: Stmt = this.statement();
             return [condition, body];
         } else {
-            throw this.error(this.peek(), "Every branch of switch must begin with 'case' or 'default'.");
+            this.error(this.peek(), "Every branch of switch must begin with 'case' or 'default'.");
+            this.statement()
             return null as any;
         }
     }
