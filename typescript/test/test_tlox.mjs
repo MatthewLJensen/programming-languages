@@ -150,16 +150,16 @@ const runFileTests = async (runFilePath, testFilePath) => {
         let failed = 0
 
         interpreter.on('exit', function () {
-            let output = fs.readFileSync(runFilePath)
-            let expected = fs.readFileSync("./result.txt")
+            let expected = fs.readFileSync(testFilePath, "utf8").toString().trim().replace(/[\n\r]/g, ''); // the .replace() removes any carriage returns
+            let output = fs.readFileSync("./result.txt", "utf8").toString().trim().replace(/[\n\r]/g, '');
 
-            if (output.equals(expected)) {
+            if (output == expected) {
                 console.log('\x1b[32m%s\x1b[0m', 'PASS\n')
                 passed++
             } else {
                 console.log('\x1b[31m%s\x1b[0m', 'FAIL')
-                console.log('\x1b[31m%s\x1b[0m', 'Expected: ' + expected)
-                console.log('\x1b[31m%s\x1b[0m', 'Actual: ' + output + '\n')
+                console.log('\x1b[31m%s\x1b[0m', 'Actual: ' + output)
+                console.log('\x1b[31m%s\x1b[0m', 'Expected: ' + expected + '\n') 
                 failed++
             }
 
@@ -191,8 +191,12 @@ const main = async () => {
 
     // File Tests
     // pull in an array of files to test
-    let files = fs.readdirSync('../scripts')
-    for (let file of files) {
+    let files = fs.readdirSync('../scripts', { withFileTypes: true })
+    const fileNames = files
+        .filter(dirent => dirent.isFile())
+        .map(dirent => dirent.name);
+
+    for (let file of fileNames) {
         let runFilePath = '../scripts/' + file
         let testFilePath = '../scripts/expected/' + file.replace('.lox', '')
         console.log(`Running ${file}`)

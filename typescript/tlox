@@ -4,4 +4,4 @@ script_name=$0
 script_full_path=$(dirname "$0")
 #node lox.js
 #echo $script_full_path
-nodemon --quiet ${script_full_path}/lox.ts $1
+ts-node ${script_full_path}/lox.ts $1

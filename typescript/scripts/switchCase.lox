@@ -9,3 +9,23 @@ switch ("dogs") {
     default:
         print("default");
 }
+switch ("dog") {
+    case "dog":
+        print("dog");
+    case 15:
+        print(15);
+    case "bird":
+        print("bird");
+    default:
+        print("default");
+}
+switch (15) {
+    case "dog":
+        print("dog");
+    case 15:
+        print(14);
+    case "bird":
+        print("bird");
+    default:
+        print("default");
+}
