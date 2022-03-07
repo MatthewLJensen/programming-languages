@@ -5,6 +5,8 @@ import { Token } from "./token"
 import { RuntimeError } from "./runtimeError"
 import { runtimeError } from "./errorHandling"
 import { Environment } from "./environment"
+import { LoxCallable, isLoxCallable } from "./loxCallable"
+import { LoxFunction } from "./loxFunction"
 
 
 class ContinueException extends Error {
@@ -21,7 +23,23 @@ class BreakException extends Error {
 }
 
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
-    private environment: Environment = new Environment()
+    readonly globals: Environment = new Environment();
+    private environment: Environment = this.globals
+
+
+    constructor() {
+        this.globals.define("clock", new class implements LoxCallable {
+            arity(): number {
+                return 0;
+            }
+
+            call(interpreter: Interpreter, args: Object[]): Object {
+                return (Date.now() / 1000.0) as number;
+            }
+
+            toString(): string { return "<native fn>"; }
+        });
+    }
 
 
     interpret(statements: Stmt.Stmt[]) {
@@ -148,12 +166,21 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         let callee: Object = this.evaluate(expr.callee);
 
         let args: Object[] = []
-        for (let arg: Expr.Expr of expr.args) { 
-          args.push(this.evaluate(arg));
+        for (let arg of expr.args) {
+            args.push(this.evaluate(arg));
         }
-    
-        LoxCallable function = (LoxCallable)callee;
-        return function.call(this, arguments);
+
+        if (!(isLoxCallable(callee))) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+
+        let func: LoxCallable = callee as LoxCallable
+
+        if (args.length != func.arity()) {
+            throw new RuntimeError(expr.paren, "Expected " + func.arity() + " arguments but got " + args.length + ".");
+        }
+
+        return func.call(this, args);
     }
     visitGetExpr(expr: Expr.Get): Object {
         throw new Error("Method not implemented.")
@@ -235,7 +262,9 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any; // do I need this?
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
-        throw new Error("Method not implemented.")
+        let func: LoxFunction = new LoxFunction(stmt);
+        this.environment.define(stmt.name.lexeme, func);
+        return null as any;
     }
     visitIfStmt(stmt: Stmt.If): Object {
         if (isTruthy(this.evaluate(stmt.condition))) {
@@ -304,7 +333,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
                     this.execute(stmt.increment);
                 }
             }
-        }catch (error){
+        } catch (error) {
             if (error instanceof BreakException) {
                 // do nothing
             } else {

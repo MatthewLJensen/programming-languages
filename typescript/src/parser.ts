@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call } from "./expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch } from "./stmt"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func } from "./stmt"
 import { tokenError } from "./errorHandling"
 
 class ParseError extends Error {
@@ -27,6 +27,7 @@ export class Parser {
 
     private declaration(): Stmt {
         try {
+            if (this.match(TokenType.FUN)) return this.function("function")
             if (this.match(TokenType.VAR)) return this.varDeclaration();
             return this.statement()
         } catch (error) {
@@ -262,6 +263,24 @@ export class Parser {
         return new Expression(expr);
     }
 
+    private function(kind: string): Func {
+        let name: Token = this.consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
+        let parameters: Token[] = []
+        if (!this.check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (parameters.length >= 255) {
+                    this.error(this.peek(), "Can't have more than 255 parameters.");
+                }
+                parameters.push(this.consume(TokenType.IDENTIFIER, "Expect parameter name."));
+            } while (this.match(TokenType.COMMA));
+        }
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.");
+        this.consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body.");
+        let body: Stmt[] = this.block();
+        return new Func(name, parameters, body);
+    }
+
     private block(): Stmt[] {
         let statements: Stmt[] = []
 
@@ -368,9 +387,9 @@ export class Parser {
         while (true) {
             if (this.match(TokenType.LEFT_PAREN)) {
                 expr = this.finishCall(expr)
-            // } else if (this.match(TokenType.DOT)) {
-            //     const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
-            //     expr = new Get(expr, name)
+                // } else if (this.match(TokenType.DOT)) {
+                //     const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                //     expr = new Get(expr, name)
             } else {
                 break
             }
