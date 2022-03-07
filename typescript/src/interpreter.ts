@@ -145,7 +145,15 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         }
     }
     visitCallExpr(expr: Expr.Call): Object {
-        throw new Error("Method not implemented.")
+        let callee: Object = this.evaluate(expr.callee);
+
+        let args: Object[] = []
+        for (let arg: Expr.Expr of expr.args) { 
+          args.push(this.evaluate(arg));
+        }
+    
+        LoxCallable function = (LoxCallable)callee;
+        return function.call(this, arguments);
     }
     visitGetExpr(expr: Expr.Get): Object {
         throw new Error("Method not implemented.")
