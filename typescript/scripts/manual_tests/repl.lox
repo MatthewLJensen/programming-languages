@@ -1,0 +1,15 @@
+// Testing REPL and variables. Variables are tested extensively throughout the rest of my tests, though.
+
+15 - 5          // 10
+print 15 - 5;   // 10
+print 15 - 5    // [line 1] Error at end: Expect ';' after value.
+var x = 15 - 7; // no output
+x - 2;          // 6
+x + 27;         // 35
+x = x - 5       // 3
+x = x + 5;      // no output
+x               // 8
+x = "hello";    // no output
+x               // hello
+x = "world"     // world
+x               // world

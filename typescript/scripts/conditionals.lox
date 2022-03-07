@@ -1,0 +1,32 @@
+// tests conditionals and logical operators
+
+if (4 == 4){
+  print "true";
+}
+if (4 == 3){
+  print "false";
+} else if (4 != 3){
+  if ("4" == "4" and "cows" == "cows"){
+    print "true";
+    if (false or true){
+      print "true";
+    }else {
+      print "false";
+    }
+    if (false or false){
+      print "true";
+    }else {
+      print "false";
+    }
+
+    if (true or false){
+      print "true";
+    }
+  } else {
+    print "false";
+  }
+  print "true";
+}
+
+print nil and "true";
+print nil or 15;

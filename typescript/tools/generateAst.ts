@@ -7,43 +7,32 @@ const dependencies = [
 
 const expressions = [
     "Assign   : Token name, Expr value",
-
     "Binary   : Expr left, Token operator, Expr right",
-
     "Ternary  : Expr expression, Expr left, Expr right",
-
-    "Call     : Expr callee, Token paren, Expr[] args", //altered from book in 2 ways. Changed List<Expr> to Expr[] and arguments to args
-
+    "Call     : Expr callee, Token paren, Expr[] args",
     "Get      : Expr object, Token name",
-
     "Grouping : Expr expression",
-
     "Literal  : Object value",
-
     "Logical  : Expr left, Token operator, Expr right",
-
     "Set      : Expr object, Token name, Expr value",
-
     "Super    : Token keyword, Token method",
-
     "This     : Token keyword",
-
     "Unary    : Token operator, Expr right",
     "Variable : Token name"
 ]
 
 // this was using Java namespaces. I decided to import the Expr module as Expr, so everything is referenced as Expr., including the abstract Expr, Which looks like Expr.Expr
 const statements = [
-    "Block      : Stmt[] statements", // altered from book.
-    "Class      : Token name, Expr.Variable superclass, Function[] methods", // altered from book
+    "Block      : Stmt[] statements",
+    "Class      : Token name, Expr.Variable superclass, Function[] methods",
     "Expression : Expr.Expr expression",
-
-    "Func       : Token name, Token[] params, Stmt[] body", //altered from book. Function changed to Func
+    "Func       : Token name, Token[] params, Stmt[] body",
     "If         : Expr.Expr condition, Stmt thenBranch, Stmt elseBranch",
     "Print      : Expr.Expr expression",
     "Return     : Token keyword, Expr.Expr value",
     "Var        : Token name, Expr.Expr initializer",
     "While      : Expr.Expr condition, Stmt body",
+    
     // Custom Extensions
     "For        : Expr.Expr condition, Stmt body, Stmt increment, Stmt initializer",
     "Break      : ",

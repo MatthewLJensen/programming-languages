@@ -2,88 +2,104 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 // Testing that expressions are parsed and interpreted correctly.
 var general_tests = [
-    'General tests                                      ; ',
-    '(15/5) * (3 + 4) - (2 + 3) * (4 - 3) / (5 - 3)     ; 18.5',
-    '15 * 3 + 4 * 5                                     ; 65',
-    '15 * 3 + 4 * 5 / 2                                 ; 55',
-    '3.5 * 3.5                                          ; 12.25',
-    '3.5 * 3.5 * 3.5                                    ; 42.875',
-    '14.5 - 3.7                                         ; 10.8',
-    '14.5 - 3.7 + 3.7                                   ; 14.5',
-    '(15 * 3 + 4 * 5 / 2 - 3                            ; [line 1] Error at end: Expect \')\' after expression.',
-    '"cat" + "dog"                                      ; catdog',
-    '"cat" > 5                                          ; Operands must be both numbers or both strings.\n[line 1]',
-    '-"cat"                                             ; Operand must be a number.\n[line 1]',
-    '!"cat"                                             ; false',
+    ['General tests'                                    , ''],
+    ['(15/5) * (3 + 4) - (2 + 3) * (4 - 3) / (5 - 3)'   , '18.5'],
+    ['15 * 3 + 4 * 5'                                   , '65'],
+    ['15 * 3 + 4 * 5 / 2'                               , '55'],
+    ['3.5 * 3.5'                                        , '12.25'],
+    ['3.5 * 3.5 * 3.5'                                  , '42.875'],
+    ['14.5 - 3.7'                                       , '10.8'],
+    ['14.5 - 3.7 + 3.7'                                 , '14.5'],
+    ['(15 * 3 + 4 * 5 / 2 - 3'                          , '[line 1] Error at end: Expect \')\' after expression.'],
+    ['"cat" + "dog"'                                    , 'catdog'],
+    ['"cat" > 5'                                        , 'Operands must be both numbers or both strings.\n[line 1]'],
+    // no longer expected behavior, I think...
+    // ["-cat"                                             , 'Operand must be a number.\n[line 1]'],
+    // ["!cat"                                             , 'false'],
 ]
 var rpn_tests = [
-    "RPN Tests                                          ;'--rpn'",
-    "1 + 2 + 3                                          ; 1 2 + 3 +",
-    "1 + 2 * 3                                          ; 1 2 3 * +",
-    "1 + 2 * 3 + 4                                      ; 1 2 3 * + 4 +",
-    "(15 + 5) / 2                                       ; 15 5 + 2 /",
-    "!15                                                ; 15 not",
-    "!(15 + 5)                                          ; 15 5 + not",
-    "-(15 + 5) / 2                                      ; 15 5 + neg 2 /",
-    "15 + 5 - -(15 + 5) / 2                             ; 15 5 + 15 5 + neg 2 / -",
-    "15 == 15                                           ; 15 15 ==",
-    "15 != 15                                           ; 15 15 !=",
-    "15 < 15                                            ; 15 15 <",
-    "15 <= 15                                           ; 15 15 <=",
-    "15 > 15                                            ; 15 15 >",
-    "15 >= 15                                           ; 15 15 >=",
-    "14.7 + 15.3                                        ; 14.7 15.3 +",
-    "14.7 + 15.3 * 2                                    ; 14.7 15.3 2 * +",
-    "14.7 + 15.3 * 2 + 3.5                              ; 14.7 15.3 2 * + 3.5 +",
-    "125.32 / 2.5                                       ; 125.32 2.5 /",
-    "125.37 - 125.32 / 2.5                              ; 125.37 125.32 2.5 / -",
-    "14 < 15 == true                                    ; 14 15 < true ==",
-    "\"cow\" < \"kitten\"                               ; cow kitten <",
-    "\"cow\" <= \"kitten\"                              ; cow kitten <=",
-    "\"cow\" > \"kitten\"                               ; cow kitten >",
-    "\"cow\" >= \"kitten\"                              ; cow kitten >=",
-    "\"cow\" == \"cow\"                                 ; cow cow ==",
-    "\"cow\" != \"cow\"                                 ; cow cow !=",
-    "\"Hello\" + \"World\"                              ; Hello World +",
-
-
+    ['RPN Tests'                           , "--rpn"],
+    ['1 + 2 + 3'                           , "1 2 + 3 +"],
+    ['1 + 2 * 3'                           , "1 2 3 * +"],
+    ['1 + 2 * 3 + 4'                       , "1 2 3 * + 4 +"],
+    ['(15 + 5) / 2'                        , "15 5 + 2 /"],
+    ['!15'                                 , "15 not"],
+    ['!(15 + 5)'                           , "15 5 + not"],
+    ['-(15 + 5) / 2'                       , "15 5 + neg 2 /"],
+    ['15 + 5 - -(15 + 5) / 2'              , "15 5 + 15 5 + neg 2 / -"],
+    ['15 == 15'                            , "15 15 =="],
+    ['15 != 15'                            , "15 15 !="],
+    ['15 < 15'                             , "15 15 <"],
+    ['15 <= 15'                            , "15 15 <="],
+    ['15 > 15'                             , "15 15 >"],
+    ['15 >= 15'                            , "15 15 >="],
+    ['14.7 + 15.3'                         , "14.7 15.3 +"],
+    ['14.7 + 15.3 * 2'                     , "14.7 15.3 2 * +"],
+    ['14.7 + 15.3 * 2 + 3.5'               , "14.7 15.3 2 * + 3.5 +"],
+    ['125.32 / 2.5'                        , "125.32 2.5 /"],
+    ['125.37 - 125.32 / 2.5'               , "125.37 125.32 2.5 / -"],
+    ['14 < 15 == true'                     , "14 15 < true =="],
+    ['\"cow\" < \"kitten\"'                , "cow kitten <"],
+    ['\"cow\" <= \"kitten\"'               , "cow kitten <="],
+    ['\"cow\" > \"kitten\"'                , "cow kitten >"],
+    ['\"cow\" >= \"kitten\"'               , "cow kitten >="],
+    ['\"cow\" == \"cow\"'                  , "cow cow =="],
+    ['\"cow\" != \"cow\"'                  , "cow cow !="],
+    ['\"Hello\" + \"World\"'               , "Hello World +"],
 ]
+
 var ternary_tests = [
-    'Ternary Tests                                      ; ',
-    'true ? 1 : 2                                       ; 1',
-    'false ? 1 : 2                                      ; 2',
-    'true ? 1 : 2 + 3                                   ; 1',
-    '!true ? 1 : 2 + 3                                  ; 5',
-    'true ? false ? 15 : \"cat\" : 3                    ; cat',
-    'false ? true ? 15 : \"cat\" : 3 + 4                ; 7',
-    'true ? true ? true ? true : 15 : 14 : 13           ; true',
-    '0 ? 1 : 2                                          ; 1',
-    '\"cat\" ? 1 : 2                                    ; 1',
-    '\"\" ? 1 : 2 + 3                                   ; 1',
-    'nil ? 1 : 2 + 3                                    ; 5',
-    'nil ? nil ? 1 : 2 + 3 : 4                          ; 4',
-    'true ? 15                                          ; [line 1] Error at end: Expect \'?\' to have matching \':\'.',
-    '\"cat\" ? 15.75 : \"dog\"                          ; 15.75',
+    ['Ternary Tests                                   ',  ''],
+    ['true ? 1 : 2                                    ',  '1'],
+    ['false ? 1 : 2                                   ',  '2'],
+    ['true ? 1 : 2 + 3                                ',  '1'],
+    ['!true ? 1 : 2 + 3                               ',  '5'],
+    ['true ? false ? 15 : \"cat\" : 3                 ',  'cat'],
+    ['false ? true ? 15 : \"cat\" : 3 + 4             ',  '7'],
+    ['true ? true ? true ? true : 15 : 14 : 13        ',  'true'],
+    ['0 ? 1 : 2                                       ',  '1'],
+    ['\"cat\" ? 1 : 2                                 ',  '1'],
+    ['\"\" ? 1 : 2 + 3                                ',  '1'],
+    ['nil ? 1 : 2 + 3                                 ',  '5'],
+    ['nil ? nil ? 1 : 2 + 3 : 4                       ',  '4'],
+    ['true ? 15                                       ',  '[line 1] Error at end: Expect \'?\' to have matching \':\'.'],
+    ['\"cat\" ? 15.75 : \"dog\"                       ',  '15.75'],
 ]
 var string_comparison_tests = [
-    'String Comparison Tests                            ; ',
-    '"cat" == "cat"                                     ; true',
-    '"cat" == "dog"                                     ; false',
-    '"cat" != "cat"                                     ; false',
-    '"cat" != "dog"                                     ; true',
-    '"cat" < "dog"                                      ; true',
-    '"cat" < "cat"                                      ; false',
-    '"cat" > "dog"                                      ; false',
-    '"cat" > "cat"                                      ; false',
-    '"cat" <= "dog"                                     ; true',
-    '"cat" <= "cat"                                     ; true',
-    '"cat" >= "dog"                                     ; false',
-    '"cat" >= "cat"                                     ; true',
-    '"Cat" == "cat"                                     ; false',
-    '"Cat" > "cat"                                      ; false',
-    '"Cat" < "cat"                                      ; true',
-    '"xyz" >= "abc"                                     ; true',
+    ['String Comparison Tests                          ', ''],
+    ['"cat" == "cat"                                   ', 'true'],
+    ['"cat" == "dog"                                   ', 'false'],
+    ['"cat" != "cat"                                   ', 'false'],
+    ['"cat" != "dog"                                   ', 'true'],
+    ['"cat" < "dog"                                    ', 'true'],
+    ['"cat" < "cat"                                    ', 'false'],
+    ['"cat" > "dog"                                    ', 'false'],
+    ['"cat" > "cat"                                    ', 'false'],
+    ['"cat" <= "dog"                                   ', 'true'],
+    ['"cat" <= "cat"                                   ', 'true'],
+    ['"cat" >= "dog"                                   ', 'false'],
+    ['"cat" >= "cat"                                   ', 'true'],
+    ['"Cat" == "cat"                                   ', 'false'],
+    ['"Cat" > "cat"                                    ', 'false'],
+    ['"Cat" < "cat"                                    ', 'true'],
+    ['"xyz" >= "abc"                                   ', 'true'],
 ]
+
+// Couldn't get these to work in time for deadline. I tested them manually.
+// var prof_o_tests_and_more_REPL = [
+//     ['Prof. O. Manual REPL Tests                ', ''],
+//     ['1 + 2                                     ', '3'],             
+//     ['var x = 3; print "";                      ', ''],
+//     ['x + 2                                     ', '5'],
+//     ['x = "hello"                               ', 'hello'],
+//     ['x == "bye"                                ', 'false'],
+//     ['print "stuff";                            ', 'stuff'],
+//     ['{ var x = "what?"; print x; } print x;    ', 'what?\nhello'],
+//     ['var x = true;                   ', ''],
+//     ['x == false                                ', 'false'],
+//     ['x == "stuff"                              ', 'false'],
+// ]
+
 
 const runTests = async (arg, testArray) => {
     return new Promise((resolve, reject) => {
@@ -96,9 +112,9 @@ const runTests = async (arg, testArray) => {
         //standard output
         interpreter.stdout.on('data', (data) => {
             let output = data.toString()
-            let testString = testArray[testId]
-            console.log(testString)
-            let expected = testString.split(';')[1]
+            let test = testArray[testId]
+            console.log(test)
+            let expected = test[1]
 
             if (output.trim() === expected.trim()) {
                 console.log('\x1b[32m%s\x1b[0m', 'PASS\n')
@@ -119,6 +135,7 @@ const runTests = async (arg, testArray) => {
             }
         });
 
+
         // error output
         interpreter.stderr.setEncoding('utf8');
         interpreter.stderr.on('data', function (data) {
@@ -131,7 +148,7 @@ const runTests = async (arg, testArray) => {
         interpreter.stdin.setDefaultEncoding('utf8')
         const runTest = (tests) => {
             let testString = tests[testId]
-            let input = testString.split(';')[0].trim()
+            let input = testString[0].trim()
             interpreter.stdin.write(input + '\n')
         }
         runTest(testArray)
@@ -171,23 +188,24 @@ const runFileTests = async (runFilePath, testFilePath) => {
 }
 
 const main = async () => {
-    let to_run = [general_tests, rpn_tests, ternary_tests, string_comparison_tests]
+    let to_run = [general_tests, rpn_tests,ternary_tests, string_comparison_tests]
     let passed = 0
     let failed = 0
 
-    // Expression Tests
-    // for (let i = 0; i < to_run.length; i++) {
-    //     let testArray = to_run[i]
-    //     let name = testArray[0].split(';')[0].trim()
-    //     let arg = testArray[0].split(';')[1].trim()
-    //     console.log(`Running ${name}`)
-    //     await runTests(arg, testArray).then((results) => {
-    //         passed += results[0]
-    //         failed += results[1]
-    //         console.log('\x1b[32m%s\x1b[0m', `${name} passed: ` + results[0])
-    //         console.log('\x1b[31m%s\x1b[0m', `${name} failed: ` + results[1])
-    //     })
-    // }
+    //Expression Tests
+    for (let i = 0; i < to_run.length; i++) {
+        let testArray = to_run[i]
+        let name = testArray[0][0].trim()
+        let arg = testArray[0][1].trim()
+        console.log(`Running ${name}`)
+        await runTests(arg, testArray).then((results) => {
+            passed += results[0]
+            failed += results[1]
+            console.log('\x1b[32m%s\x1b[0m', `${name} passed: ` + results[0])
+            console.log('\x1b[31m%s\x1b[0m', `${name} failed: ` + results[1])
+        })
+    }
+
 
     // File Tests
     // pull in an array of files to test

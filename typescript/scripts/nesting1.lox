@@ -1,0 +1,13 @@
+// tests block and scope
+var a = "Hello, ";
+{
+  {
+    {
+      {
+        print a;
+        var a = "world!";
+        print a;
+      }
+    }
+  }
+}

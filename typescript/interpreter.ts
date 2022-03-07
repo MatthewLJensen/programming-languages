@@ -139,11 +139,9 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         const test: Object = this.evaluate(expr.expression)
 
         if (isTruthy(test)) {
-            const left: Object = this.evaluate(expr.left);
-            return left
+            return this.evaluate(expr.left);
         } else {
-            const right: Object = this.evaluate(expr.right);
-            return right
+            return this.evaluate(expr.right);
         }
     }
     visitCallExpr(expr: Expr.Call): Object {

@@ -248,7 +248,7 @@ export class Parser {
     }
 
     private exitStatement(): Stmt {
-        this.consume(TokenType.SEMICOLON, "Expect ';' after exit."); // I just removed the quotation marks. Not sure why Prof. O doesn't want them in his test on github, but the output file does want them.
+        this.consume(TokenType.SEMICOLON, "Expect ';' after 'exit'."); // I just removed the quotation marks. Not sure why Prof. O doesn't want them in his test on github, but the output file does want them.
         return new Exit();
     }
 
