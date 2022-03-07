@@ -3,11 +3,11 @@ import { Scanner } from './scanner';
 import * as readline from 'readline';
 import { Token } from './token';
 import { TokenType } from './tokenType';
-import { Expr } from "./Expr"
-import { Stmt } from "./Stmt"
+import { Expr } from "./expr"
+import { Stmt } from "./stmt"
 import { Parser } from "./parser"
-import { AstPrinter } from "./AstPrinter"
-import { RpnPrinter } from "./RpnPrinter"
+import { AstPrinter } from "./astPrinter"
+import { RpnPrinter } from "./rpnPrinter"
 import { RuntimeError } from './runtimeError';
 import { Interpreter } from "./interpreter"
 import { hadRuntimeError, setHadError, getHadError } from './errorHandling';

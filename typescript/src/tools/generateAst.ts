@@ -48,7 +48,7 @@ function defineAST(outputDir: string, baseName: string, types: string[]) {
     output += dependencies.join('\n')
 
     if (baseName == "Stmt") {
-        output += '\nimport * as Expr from "./Expr"'
+        output += '\nimport * as Expr from "./expr"'
     }
 
     //Generate the visitor interfaces

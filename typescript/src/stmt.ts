@@ -1,5 +1,5 @@
 import { Token } from "./token"
-import * as Expr from "./Expr"
+import * as Expr from "./expr"
 
  
 export interface Visitor<R> {

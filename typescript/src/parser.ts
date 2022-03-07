@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./Expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch } from "./Stmt"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical } from "./expr"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch } from "./stmt"
 import { tokenError } from "./errorHandling"
 
 class ParseError extends Error {

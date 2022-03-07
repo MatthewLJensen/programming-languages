@@ -1,5 +1,5 @@
-import * as Expr from "./Expr"
-import * as Stmt from "./Stmt"
+import * as Expr from "./expr"
+import * as Stmt from "./stmt"
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 
