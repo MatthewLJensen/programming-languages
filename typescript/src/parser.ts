@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
 import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call } from "./expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func } from "./stmt"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func, Return } from "./stmt"
 import { tokenError } from "./errorHandling"
 
 class ParseError extends Error {
@@ -48,10 +48,9 @@ export class Parser {
         if (this.match(TokenType.CONTINUE)) return this.continueStatement()
         if (this.match(TokenType.FOR)) return this.forStatement()
         if (this.match(TokenType.SWITCH)) return this.switchStatement()
-        // if (this.match(TokenType.CASE)) return this.caseStatement()
-        // if (this.match(TokenType.DEFAULT)) return this.defaultStatement()
         if (this.match(TokenType.IF)) return this.ifStatement()
         if (this.match(TokenType.PRINT)) return this.printStatement()
+        if (this.match(TokenType.RETURN)) return this.returnStatement()
         if (this.match(TokenType.WHILE)) return this.whileStatement()
         if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block())
         return this.expressionStatement()
@@ -101,6 +100,17 @@ export class Parser {
         let value: Expr = this.expression()
         this.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return new Print(value)
+    }
+
+    private returnStatement(): Stmt {
+        let keyword: Token = this.previous();
+        let value: Expr = null as any;
+        if (!this.check(TokenType.SEMICOLON)) {
+            value = this.expression();
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after return value.");
+        return new Return(keyword, value);
     }
 
     private varDeclaration(): Stmt {

@@ -7,6 +7,7 @@ import { runtimeError } from "./errorHandling"
 import { Environment } from "./environment"
 import { LoxCallable, isLoxCallable } from "./loxCallable"
 import { LoxFunction } from "./loxFunction"
+import { Return } from "./return"
 
 
 class ContinueException extends Error {
@@ -21,7 +22,6 @@ class BreakException extends Error {
         Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
     }
 }
-
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     readonly globals: Environment = new Environment();
     private environment: Environment = this.globals
@@ -262,7 +262,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any; // do I need this?
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
-        let func: LoxFunction = new LoxFunction(stmt);
+        let func: LoxFunction = new LoxFunction(stmt, this.environment);
         this.environment.define(stmt.name.lexeme, func);
         return null as any;
     }
@@ -280,7 +280,12 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any
     }
     visitReturnStmt(stmt: Stmt.Return): Object {
-        throw new Error("Method not implemented.")
+        let value: Object = null as any;
+        if (stmt.value != null) {
+            value = this.evaluate(stmt.value)
+        }
+
+        throw new Return(value)
     }
     visitVarStmt(stmt: Stmt.Var): Object {
         let value: Object = null as any;
