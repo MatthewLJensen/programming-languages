@@ -25,7 +25,7 @@ class BreakException extends Error {
 export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     readonly globals: Environment = new Environment();
     private environment: Environment = this.globals
-
+    private locals: Map<Expr.Expr, number> = new Map<Expr.Expr, number>()
 
     constructor() {
         this.globals.define("clock", new class implements LoxCallable {
@@ -78,6 +78,10 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         stmt.accept(this);
     }
 
+    resolve(expr: Expr.Expr, depth: number) {
+        this.locals.set(expr, depth);
+    }
+
     executeBlock(statements: Stmt.Stmt[], environment: Environment) {
         let previous: Environment = this.environment;
         try {
@@ -95,7 +99,14 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
     visitAssignExpr(expr: Expr.Assign): Object {
         const value: Object = this.evaluate(expr.value);
-        this.environment.assign(expr.name, value);
+        
+        let distance = this.locals.get(expr);
+        if (distance != null) {
+          this.environment.assignAt(distance, expr.name, value);
+        } else {
+          this.globals.assign(expr.name, value);
+        }
+
         return value;
     }
     visitBinaryExpr(expr: Expr.Binary): Object {
@@ -224,9 +235,19 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         return null as any;
     }
+    
     visitVariableExpr(expr: Expr.Variable): Object {
-        return this.environment.get(expr.name)
+        return this.lookUpVariable(expr.name, expr);
     }
+    private lookUpVariable(name: Token, expr: Expr.Expr): Object {
+        let distance = this.locals.get(expr);
+        if (distance != null) {
+            return this.environment.getAt(distance, name.lexeme);
+        } else {
+            return this.globals.get(name);
+        }
+    }
+
     visitBlockStmt(stmt: Stmt.Block): Object {
         this.executeBlock(stmt.statements, new Environment(this.environment))
         return null as any;

@@ -10,6 +10,10 @@ export function error(line: number, message: string) {
     report(line, "", message)
 }
 
+export function errorString(name: any, message: string) { // do I need to have this extra error function that is only used in the resolver?
+    report(name, "", message)
+}
+
 export function runtimeError(error: RuntimeError) {
     console.log(error.message + "\n[line " + error.token.line + "]") // hopefully message is the right alternative for .getMessage in Java
     hadRuntimeError = true;

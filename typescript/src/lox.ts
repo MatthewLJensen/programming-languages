@@ -11,6 +11,7 @@ import { RpnPrinter } from "./rpnPrinter"
 import { RuntimeError } from './runtimeError';
 import { Interpreter } from "./interpreter"
 import { hadRuntimeError, setHadError, getHadError } from './errorHandling';
+import { Resolver } from "./resolver"
 
 const interpreter: Interpreter = new Interpreter()
 
@@ -78,14 +79,22 @@ function run(source: string, fromRepl: boolean = false) {
 
     if (getHadError()) return
 
+    const resolver: Resolver = new Resolver(interpreter);
+
     if (syntax instanceof Array) {
+        
+        resolver.resolveArray(syntax);
+        if (getHadError()) return
         interpreter.interpret(syntax);
     } else if (syntax instanceof Expr) {
         if (rpn) {
+            
             console.log(new RpnPrinter().rpnPrintExpr(syntax))
         } else if (ast) {
             console.log(new AstPrinter().printExpr(syntax))
         } else {
+            resolver.resolveExpr(syntax);
+            if (getHadError()) return
             interpreter.interpretExpression(syntax)
         }
     }

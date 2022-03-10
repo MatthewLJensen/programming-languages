@@ -34,4 +34,21 @@ export class Environment {
     define(name: string, value: Object) {
         this.values.set(name, value);
     }
+    ancestor(distance: number): Environment {
+        let environment: Environment = this;
+        for (let i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+        return environment;
+    }
+
+    getAt(distance: number, name: string): Object { // look here if things stop working
+        let value = this.ancestor(distance).values.get(name)
+        if (value != null) return value
+        return null as any
+    }
+
+    assignAt(distance: number, name: Token, value: Object) {
+        this.ancestor(distance).values.set(name.lexeme, value);
+    }
 }
