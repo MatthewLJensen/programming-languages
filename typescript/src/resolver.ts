@@ -196,7 +196,8 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any
     }
     visitGetExpr(expr: Expr.Get): Object {
-        throw new Error("Method not implemented.")
+        this.resolveExpr(expr.object);
+        return null as any
     }
     visitGroupingExpr(expr: Expr.Grouping): Object {
         this.resolveExpr(expr.expression);
@@ -211,7 +212,9 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any
     }
     visitSetExpr(expr: Expr.Set): Object {
-        throw new Error("Method not implemented.")
+        this.resolveExpr(expr.value);
+        this.resolveExpr(expr.object);
+        return null as any
     }
     visitSuperExpr(expr: Expr.Super): Object {
         throw new Error("Method not implemented.")
