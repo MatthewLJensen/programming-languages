@@ -170,7 +170,9 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitSwitchStmt(stmt: Stmt.Switch): Object {
         this.resolveExpr(stmt.expression);
         this.resolveMixedArray(stmt.cases);
-        this.resolveStmt(stmt.defaultCase);
+        if (stmt.defaultCase != null) {
+            this.resolveStmt(stmt.defaultCase);
+        }
         return null as any
     }
     visitAssignExpr(expr: Expr.Assign): Object {
@@ -184,7 +186,10 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any
     }
     visitTernaryExpr(expr: Expr.Ternary): Object {
-        throw new Error("Method not implemented.")
+        this.resolveExpr(expr.expression);
+        this.resolveExpr(expr.left);
+        this.resolveExpr(expr.right);
+        return null as any
     }
     visitCallExpr(expr: Expr.Call): Object {
         this.resolveExpr(expr.callee)

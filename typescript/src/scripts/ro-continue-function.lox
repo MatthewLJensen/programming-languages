@@ -5,7 +5,7 @@ fun countUpToContinue(limit)
         print i;
         if (i < limit)
             continue;
-        print "What?!"
+        print "What?!";
     }
     print "Done";
 }
