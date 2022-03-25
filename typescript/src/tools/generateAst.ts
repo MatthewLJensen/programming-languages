@@ -24,7 +24,7 @@ const expressions = [
 // this was using Java namespaces. I decided to import the Expr module as Expr, so everything is referenced as Expr., including the abstract Expr, Which looks like Expr.Expr
 const statements = [
     "Block      : Stmt[] statements",
-    "Class      : Token name, Expr.Variable superclass, Function[] methods",
+    "Class      : Token name, Expr.Variable superclass, Func[] methods",
     "Expression : Expr.Expr expression",
     "Func       : Token name, Token[] params, Stmt[] body",
     "If         : Expr.Expr condition, Stmt thenBranch, Stmt elseBranch",

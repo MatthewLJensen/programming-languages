@@ -6,7 +6,8 @@ import { errorString } from "./errorHandling"
 
 enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD
 }
 
 export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
@@ -99,7 +100,20 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     }
 
     visitClassStmt(stmt: Stmt.Class): Object {
-        throw new Error("Method not implemented.")
+        this.declare(stmt.name)
+        this.define(stmt.name)
+
+        this.beginScope();
+        this.scopes.peek().put("this", true);
+
+        for (let method of stmt.methods) {
+            let declaration: FunctionType = FunctionType.METHOD;
+            this.resolveFunction(method, declaration);
+        }
+
+        this.endScope()
+
+        return null as any
     }
     visitExpressionStmt(stmt: Stmt.Expression): Object {
         this.resolveExpr(stmt.expression);
@@ -225,7 +239,8 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitThisExpr(expr: Expr.This): Object {
-        throw new Error("Method not implemented.")
+        this.resolveLocal(expr, expr.keyword)
+        return null as any
     }
     visitUnaryExpr(expr: Expr.Unary): Object {
         this.resolveExpr(expr.right);

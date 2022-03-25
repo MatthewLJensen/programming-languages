@@ -39,9 +39,9 @@ export class Block extends Stmt {
 export class Class extends Stmt {
     public name: Token
     public superclass: Expr.Variable
-    public methods: Function[]
+    public methods: Func[]
 
-    constructor(name: Token, superclass: Expr.Variable, methods: Function[]) {
+    constructor(name: Token, superclass: Expr.Variable, methods: Func[]) {
         super()
         this.name = name
         this.superclass = superclass

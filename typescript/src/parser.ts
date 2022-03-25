@@ -1,7 +1,7 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call } from "./expr"
-import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func, Return } from "./stmt"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call, Get, Set, This } from "./expr"
+import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func, Return, Class } from "./stmt"
 import { tokenError } from "./errorHandling"
 
 class ParseError extends Error {
@@ -27,6 +27,7 @@ export class Parser {
 
     private declaration(): Stmt {
         try {
+            if (this.match(TokenType.CLASS)) return this.classDeclaration()
             if (this.match(TokenType.FUN)) return this.function("function")
             if (this.match(TokenType.VAR)) return this.varDeclaration();
             return this.statement()
@@ -40,6 +41,20 @@ export class Parser {
         }
     }
 
+    private classDeclaration(): Stmt {
+        let name: Token = this.consume(TokenType.IDENTIFIER, "Expect class name.");
+        this.consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
+    
+        let methods: Func[] = []
+        while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+          methods.push(this.function("method"));
+        }
+    
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
+    
+        let temp: Variable = null as any // I need to pass a superclass later, so this is just a placeholder
+        return new Class(name, temp, methods);
+      }
 
 
     private statement(): Stmt {
@@ -312,6 +327,9 @@ export class Parser {
             if (expr instanceof Variable) {
                 let name: Token = (expr as Variable).name;
                 return new Assign(name, value);
+            }else if (expr instanceof Get) {
+                let get: Get = expr as Get;
+                return new Set(get.object, get.name, value)
             }
 
             this.error(equals, "Invalid assignment target."); // what number should equals be?
@@ -397,9 +415,9 @@ export class Parser {
         while (true) {
             if (this.match(TokenType.LEFT_PAREN)) {
                 expr = this.finishCall(expr)
-                // } else if (this.match(TokenType.DOT)) {
-                //     const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
-                //     expr = new Get(expr, name)
+                } else if (this.match(TokenType.DOT)) {
+                    const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Get(expr, name)
             } else {
                 break
             }
@@ -430,6 +448,8 @@ export class Parser {
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
             return new Literal(this.previous().literal)
         }
+
+        if (this.match(TokenType.THIS)) return new This(this.previous())
 
         if (this.match(TokenType.IDENTIFIER)) {
             return new Variable(this.previous());

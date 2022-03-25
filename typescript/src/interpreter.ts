@@ -7,7 +7,9 @@ import { runtimeError } from "./errorHandling"
 import { Environment } from "./environment"
 import { LoxCallable, isLoxCallable } from "./loxCallable"
 import { LoxFunction } from "./loxFunction"
+import { LoxClass } from "./loxClass"
 import { Return } from "./return"
+import { LoxInstance } from "./loxInstance"
 
 
 class ContinueException extends Error {
@@ -194,7 +196,13 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return func.call(this, args);
     }
     visitGetExpr(expr: Expr.Get): Object {
-        throw new Error("Method not implemented.")
+        let object: Object = this.evaluate(expr.object);
+        if (object instanceof LoxInstance) {
+          return (object as LoxInstance).get(expr.name);
+        }
+    
+        throw new RuntimeError(expr.name,
+            "Only instances have properties.");
     }
     visitGroupingExpr(expr: Expr.Grouping): Object {
         return this.evaluate(expr.expression)
@@ -214,7 +222,15 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return this.evaluate(expr.right);
     }
     visitSetExpr(expr: Expr.Set): Object {
-        throw new Error("Method not implemented.")
+        let object: Object = this.evaluate(expr.object);
+
+        if (!(object instanceof LoxInstance)) { 
+          throw new RuntimeError(expr.name, "Only instances have fields.");
+        }
+    
+        let value: Object = this.evaluate(expr.value);
+        (object as LoxInstance).set(expr.name, value);
+        return value;
     }
     visitSuperExpr(expr: Expr.Super): Object {
         throw new Error("Method not implemented.")
@@ -276,11 +292,22 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any;
     }
     visitClassStmt(stmt: Stmt.Class): Object {
-        throw new Error("Method not implemented.")
+        this.environment.define(stmt.name.lexeme, null as any);
+        
+        let methods: Map<string, LoxFunction> = new Map<string, LoxFunction>();
+        for (let method of stmt.methods) {
+          let func: LoxFunction = new LoxFunction(method, this.environment);
+          methods.set(method.name.lexeme, func);
+        }
+    
+        let klass: LoxClass = new LoxClass(stmt.name.lexeme, methods);
+
+        this.environment.assign(stmt.name, klass);
+        return null as any
     }
     visitExpressionStmt(stmt: Stmt.Expression): Object {
         this.evaluate(stmt.expression);
-        return null as any; // do I need this?
+        return null as any;
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
         let func: LoxFunction = new LoxFunction(stmt, this.environment);
