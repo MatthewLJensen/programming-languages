@@ -14,13 +14,21 @@ export class LoxClass implements LoxCallable {
 
     public call(interpreter: Interpreter, args: Object[]): Object {
         let instance: LoxInstance = new LoxInstance(this)
+
+        let initializer: LoxFunction = this.findMethod("init");
+        if (initializer != null) {
+          initializer.bind(instance).call(interpreter, args);
+        }
+
         return instance
     }
     public toString(): string {
         return this.name
     }
     public arity(): number {
-        return 0
+        let initializer: LoxFunction = this.findMethod("init");
+        if (initializer === null) return 0
+        return initializer.arity()
     }
 
     public findMethod(name: string): LoxFunction {

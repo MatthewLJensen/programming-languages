@@ -236,7 +236,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitThisExpr(expr: Expr.This): Object {
-        throw new Error("Method not implemented.")
+        return this.lookUpVariable(expr.keyword, expr)
     }
     visitUnaryExpr(expr: Expr.Unary): Object {
         const right: Object = this.evaluate(expr.right);
@@ -296,7 +296,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         
         let methods: Map<string, LoxFunction> = new Map<string, LoxFunction>();
         for (let method of stmt.methods) {
-          let func: LoxFunction = new LoxFunction(method, this.environment);
+          let func: LoxFunction = new LoxFunction(method, this.environment, method.name.lexeme === "init");
           methods.set(method.name.lexeme, func);
         }
     
@@ -310,7 +310,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any;
     }
     visitFuncStmt(stmt: Stmt.Func): Object {
-        let func: LoxFunction = new LoxFunction(stmt, this.environment);
+        let func: LoxFunction = new LoxFunction(stmt, this.environment, false);
         this.environment.define(stmt.name.lexeme, func);
         return null as any;
     }

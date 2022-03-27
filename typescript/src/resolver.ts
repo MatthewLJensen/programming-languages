@@ -2,18 +2,27 @@ import * as Expr from "./expr"
 import * as Stmt from "./stmt"
 import { Interpreter } from "./interpreter"
 import { Token } from "./token"
-import { errorString } from "./errorHandling"
+import { tokenError } from "./errorHandling"
 
 enum FunctionType {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
 }
+
+enum ClassType {
+    NONE,
+    CLASS
+}
+
+
 
 export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     private interpreter: Interpreter
     private scopes: Array<Map<String, Boolean>> = new Array<Map<String, Boolean>>()
     private currentFunction: FunctionType = FunctionType.NONE;
+    private currentClass: ClassType = ClassType.NONE;
 
     constructor(interpreter: Interpreter) {
         this.interpreter = interpreter;
@@ -72,7 +81,7 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         let scope: Map<String, Boolean> = this.scopes[this.scopes.length - 1];
 
         if (scope.has(name.lexeme)) {
-            errorString(name, "Already a variable with this name in this scope.");
+            tokenError(name, "Already a variable with this name in this scope.");
         }
 
         scope.set(name.lexeme, false);
@@ -100,17 +109,22 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     }
 
     visitClassStmt(stmt: Stmt.Class): Object {
+        let enclosingClass: ClassType = this.currentClass
+        this.currentClass = ClassType.CLASS
         this.declare(stmt.name)
         this.define(stmt.name)
 
         this.beginScope();
-        this.scopes.peek().put("this", true);
+        this.scopes[this.scopes.length - 1].set("this", true);
 
         for (let method of stmt.methods) {
             let declaration: FunctionType = FunctionType.METHOD;
+            if (method.name.lexeme === "init") {
+                declaration = FunctionType.INITIALIZER;
+            }
             this.resolveFunction(method, declaration);
         }
-
+        this.currentClass = enclosingClass;
         this.endScope()
 
         return null as any
@@ -140,10 +154,13 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     }
     visitReturnStmt(stmt: Stmt.Return): Object {
         if (this.currentFunction == FunctionType.NONE) {
-            errorString(stmt.keyword, "Can't return from top-level code.");
+            tokenError(stmt.keyword, "Can't return from top-level code.");
         }
 
         if (stmt.value != null) {
+            if (this.currentFunction == FunctionType.INITIALIZER) {
+                tokenError(stmt.keyword, "Can't return a value from an initializer.");
+            }
             this.resolveExpr(stmt.value);
         }
         return null as any
@@ -239,6 +256,10 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         throw new Error("Method not implemented.")
     }
     visitThisExpr(expr: Expr.This): Object {
+        if (this.currentClass == ClassType.NONE) {
+            tokenError(expr.keyword, "Can't use 'this' outside of a class.");
+            return null as any
+        }
         this.resolveLocal(expr, expr.keyword)
         return null as any
     }
@@ -249,7 +270,7 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
     visitVariableExpr(expr: Expr.Variable): Object {
         if (!(this.scopes.length === 0) && this.scopes[this.scopes.length - 1].get(expr.name.lexeme) === false) {
-            errorString(expr.name, "Can't read local variable in its own initializer.");
+            tokenError(expr.name, "Can't read local variable in its own initializer.");
         }
 
         this.resolveLocal(expr, expr.name);
