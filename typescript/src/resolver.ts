@@ -197,14 +197,16 @@ export class Resolver implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any
     }
     visitForStmt(stmt: Stmt.For): Object {
+        this.beginScope();
         this.resolveExpr(stmt.condition);
 
-        if (stmt.initializer != null)
+        if (stmt.initializer !== null)
             this.resolveStmt(stmt.initializer)
-        if (stmt.increment != null)
+        if (stmt.increment !== null)
             this.resolveStmt(stmt.increment)
 
         this.resolveStmt(stmt.body);
+        this.endScope();
         return null as any
     }
     visitBreakStmt(stmt: Stmt.Break): Object {

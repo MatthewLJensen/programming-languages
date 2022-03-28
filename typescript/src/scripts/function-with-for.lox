@@ -1,0 +1,17 @@
+fun forLoop() {
+    for (var j = 0; j < 10; j = j + 1) {
+        print j;
+    }
+}
+
+forLoop();
+
+fun WhileLoop() {
+    var j = 0;
+    while (j < 10) {
+        print j;
+        j = j + 1;
+    }
+}
+
+whileLoop();
