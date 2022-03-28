@@ -101,12 +101,12 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
     visitAssignExpr(expr: Expr.Assign): Object {
         const value: Object = this.evaluate(expr.value);
-        
+
         let distance = this.locals.get(expr);
         if (distance != null) {
-          this.environment.assignAt(distance, expr.name, value);
+            this.environment.assignAt(distance, expr.name, value);
         } else {
-          this.globals.assign(expr.name, value);
+            this.globals.assign(expr.name, value);
         }
 
         return value;
@@ -198,9 +198,9 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitGetExpr(expr: Expr.Get): Object {
         let object: Object = this.evaluate(expr.object);
         if (object instanceof LoxInstance) {
-          return (object as LoxInstance).get(expr.name);
+            return (object as LoxInstance).get(expr.name);
         }
-    
+
         throw new RuntimeError(expr.name,
             "Only instances have properties.");
     }
@@ -224,16 +224,30 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
     visitSetExpr(expr: Expr.Set): Object {
         let object: Object = this.evaluate(expr.object);
 
-        if (!(object instanceof LoxInstance)) { 
-          throw new RuntimeError(expr.name, "Only instances have fields.");
+        if (!(object instanceof LoxInstance)) {
+            throw new RuntimeError(expr.name, "Only instances have fields.");
         }
-    
+
         let value: Object = this.evaluate(expr.value);
         (object as LoxInstance).set(expr.name, value);
         return value;
     }
     visitSuperExpr(expr: Expr.Super): Object {
-        throw new Error("Method not implemented.")
+        let distance = this.locals.get(expr);
+        let superclass: LoxClass
+        let object: LoxInstance
+        if (distance !== undefined) {
+            superclass = this.environment.getAt(distance, "super") as LoxClass;
+            object = this.environment.getAt(distance - 1, "this") as LoxInstance;
+            let method: LoxFunction = superclass.findMethod(expr.method.lexeme);
+
+            if (method == null) {
+                throw new RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'.");
+            }
+
+            return method.bind(object);
+        }
+        return null as any
     }
     visitThisExpr(expr: Expr.This): Object {
         return this.lookUpVariable(expr.keyword, expr)
@@ -251,7 +265,7 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
 
         return null as any;
     }
-    
+
     visitVariableExpr(expr: Expr.Variable): Object {
         return this.lookUpVariable(expr.name, expr);
     }
@@ -292,15 +306,32 @@ export class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object>{
         return null as any;
     }
     visitClassStmt(stmt: Stmt.Class): Object {
+        let superclass: Object = null as any;
+        if (stmt.superclass != null) {
+            superclass = this.evaluate(stmt.superclass);
+            if (!(superclass instanceof LoxClass)) {
+                throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
+            }
+        }
+
         this.environment.define(stmt.name.lexeme, null as any);
-        
+
+        if (stmt.superclass !== null) {
+            this.environment = new Environment(this.environment);
+            this.environment.define("super", superclass);
+        }
+
         let methods: Map<string, LoxFunction> = new Map<string, LoxFunction>();
         for (let method of stmt.methods) {
-          let func: LoxFunction = new LoxFunction(method, this.environment, method.name.lexeme === "init");
-          methods.set(method.name.lexeme, func);
+            let func: LoxFunction = new LoxFunction(method, this.environment, method.name.lexeme === "init");
+            methods.set(method.name.lexeme, func);
         }
-    
-        let klass: LoxClass = new LoxClass(stmt.name.lexeme, methods);
+
+        let klass: LoxClass = new LoxClass(stmt.name.lexeme, superclass as LoxClass, methods);
+
+        if (superclass !== null) {
+            this.environment = this.environment.enclosing;
+        }
 
         this.environment.assign(stmt.name, klass);
         return null as any

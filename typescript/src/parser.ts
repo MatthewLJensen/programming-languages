@@ -1,6 +1,6 @@
 import { Token } from "./token"
 import { TokenType } from "./tokenType"
-import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call, Get, Set, This } from "./expr"
+import { Expr, Grouping, Literal, Unary, Binary, Ternary, Variable, Assign, Logical, Call, Get, Set, This, Super } from "./expr"
 import { Stmt, Print, Expression, Var, Block, If, While, Break, Continue, Exit, For, Switch, Func, Return, Class } from "./stmt"
 import { tokenError } from "./errorHandling"
 
@@ -43,18 +43,24 @@ export class Parser {
 
     private classDeclaration(): Stmt {
         let name: Token = this.consume(TokenType.IDENTIFIER, "Expect class name.");
+
+        let superclass: Variable = null as any
+        if (this.match(TokenType.LESS)) {
+            this.consume(TokenType.IDENTIFIER, "Expect superclass name.");
+            superclass = new Variable(this.previous());
+        }
+
         this.consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
-    
+
         let methods: Func[] = []
         while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
-          methods.push(this.function("method"));
+            methods.push(this.function("method"));
         }
-    
+
         this.consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
-    
-        let temp: Variable = null as any // I need to pass a superclass later, so this is just a placeholder
-        return new Class(name, temp, methods);
-      }
+
+        return new Class(name, superclass, methods);
+    }
 
 
     private statement(): Stmt {
@@ -327,7 +333,7 @@ export class Parser {
             if (expr instanceof Variable) {
                 let name: Token = (expr as Variable).name;
                 return new Assign(name, value);
-            }else if (expr instanceof Get) {
+            } else if (expr instanceof Get) {
                 let get: Get = expr as Get;
                 return new Set(get.object, get.name, value)
             }
@@ -415,9 +421,9 @@ export class Parser {
         while (true) {
             if (this.match(TokenType.LEFT_PAREN)) {
                 expr = this.finishCall(expr)
-                } else if (this.match(TokenType.DOT)) {
-                    const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
-                    expr = new Get(expr, name)
+            } else if (this.match(TokenType.DOT)) {
+                const name: Token = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                expr = new Get(expr, name)
             } else {
                 break
             }
@@ -447,6 +453,13 @@ export class Parser {
 
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
             return new Literal(this.previous().literal)
+        }
+
+        if (this.match(TokenType.SUPER)) {
+            let keyword: Token = this.previous();
+            this.consume(TokenType.DOT, "Expect '.' after 'super'.");
+            let method: Token = this.consume(TokenType.IDENTIFIER, "Expect superclass method name.");
+            return new Super(keyword, method);
         }
 
         if (this.match(TokenType.THIS)) return new This(this.previous())
